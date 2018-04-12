@@ -136,7 +136,7 @@ The code is more or less the same as the one with the property file, except for 
 
 However generally you will not be writing this code but instead you would be using the `ClassPathXmlApplicationContext` to do all this work for you.
 
-```
+```java
 public class SpringContextsApplication {
 
   public static void main(String[] args) throws Exception {
@@ -225,7 +225,7 @@ public class SpringContextsApplication {
 
 ### Conclusion
 
-Now what is the conclusion when seeing all 3 different configuration mechanism. The first 2 mechanisms translate into the same as what is happening inside an `@Bean` annotated method.
+Now what is the conclusion when seeing all 3 different configuration mechanisms. The first 2 mechanisms translate into the same as what is happening inside an `@Bean` annotated method.
 
 Based on the `.(class)` for property file based and `class` attribute for XML based configuration you could conclude that Spring does `new <class-value-here>()` itself. It then will call `set<property-name-here>(<property-value-here>)` just as in Java based configuration.
 
