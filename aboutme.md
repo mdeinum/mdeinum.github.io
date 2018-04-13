@@ -1,16 +1,14 @@
 ---
 layout: page
 title: About me
-subtitle: Why you'd want to go on a date with me
 ---
 
-My name is Inigo Montoya. I have the following qualities:
+Husband, Father, Lifeguard, Scuba Instructor, Consultant, Author, Pragmatist, Open Source Enthusiast.
 
-- I rock a great mustache
-- I'm extremely loyal to my family
+## Books I've authored
 
-What else do you need?
+[Spring 5 Recipes](https://www.apress.com/gp/book/9781484227893)
 
-### My story
+[Spring Recipes](https://www.apress.com/gp/book/9781430259091)
 
-To be honest, I'm having some trouble remembering right now, so why don't you just watch [my movie](https://en.wikipedia.org/wiki/The_Princess_Bride_%28film%29) and it will answer **all** your questions.
+[Pro Spring MVC: With Web Flow](https://www.apress.com/gp/book/9781430241553)
