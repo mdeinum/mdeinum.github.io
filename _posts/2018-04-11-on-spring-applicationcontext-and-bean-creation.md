@@ -266,8 +266,7 @@ Now what is the conclusion when seeing all 3 different configuration mechanisms.
 
 Based on the `.(class)` for property file based and `class` attribute for XML based configuration you can conclude that Spring does `new <class-value-here>()` itself. It then will call `set<property-name-here>(<property-value-here>)` just as in Java based configuration, or passing constructor arguments when using `<constructor-arg>` in the XML configuration).
 
-Properties | XML attribute | Java Configuration |
------------|-----|------|
-`.(class)=Person` | `class=Person` | Name of the class
-`person.name=Marten Deinum` | `<property name="name" value="Marten Deinum"` | `setName("Marten Deinum")`
-[Translation Table]
+|Properties | XML | Java |
+|-----------|-----|------|
+|`.(class)=Person` | `class=Person` | Name of the class |
+|`person.name=Marten Deinum` | `<property name="name" value="Marten Deinum"` | `setName("Marten Deinum")` |
