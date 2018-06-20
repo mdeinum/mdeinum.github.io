@@ -226,7 +226,7 @@ public class SpringContextsApplication {
       new ConfigurationClass(ApplicationContext.class, "applicationContext")));
     contextFromJava.refresh();
 
-    doGreeting(contextFromXml);
+    doGreeting(contextFromJava);
 
     contextFromJava.stop();
   }
@@ -248,7 +248,7 @@ public class SpringContextsApplication {
     AnnotationConfigApplicationContext contextFromJava =
       new AnnotationConfigApplicationContext(ApplicationContext.class);
 
-    doGreeting(contextFromXml);
+    doGreeting(contextFromJava);
 
     contextFromJava.stop();
   }
@@ -270,3 +270,5 @@ Based on the `.(class)` for property file based and `class` attribute for XML ba
 |-----------|-----|------|
 |`.(class)=Person` | `class=Person` | Name of the class |
 |`person.name=Marten Deinum` | `<property name="name" value="Marten Deinum"` | `setName("Marten Deinum")` |
+
+For those interested the source can be found on [GitHub](https://github.com/mdeinum/blog-spring-contexts).
