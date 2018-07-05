@@ -9,7 +9,16 @@ tags:
 published: true
 ---
 
-By default the [`@PropertySource`][1] annotation cannot be used with YAML files, and this is also the standard [answer][6] given when asked on for instance StackOverflow (even by me). However as of Spring 4.3 it is possible to specify a [`PropertySourceFactory`][3] which, as the name implies is a factory for a `PropertySource` the default implementation is the [`DefaultPropertySourceFactory`][4].
+By default the [`@PropertySource`][1] annotation isn't usable with YAML files. This is also the standard [answer][6] given when asked on, for instance StackOverflow (even by me!).
+
+But as of [Spring 4.3][7] it's possible to make it work. Spring 4.3 introduced the [`PropertySourceFactory`][3] interface. The `PropertySourceFactory` is a factory for a `PropertySource`. The default implementation used is the [`DefaultPropertySourceFactory`][4], which creates `ResourcePropertySource` instances.
+
+Writing a custom implementation requires implementing a single method, createPropertySource. The custom implementation needs to do 2 things:
+
+* Load the given resource into a java.util.Properties object
+* Create a PropertySource wrapping the loaded properties
+
+To load a YAML file Spring provides the [`YamlPropertiesFactoryBean`][5]. This class will load 1 or more files and convert it into a `java.util.Properties` object. Spring provides a [`PropertiesPropertySource`] which wraps a `java.util.Properties` object. Finally the name of the PropertySource is either given or derived. The derived name is the resource description, as mentioned in [the contract][8].  
 
 ```java
 package biz.deinum.blog.yaml;
@@ -44,8 +53,6 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
 
 **NOTE:** To load YAML it is required that SnakeYAML 1.18 or higher is on the classpath!
 
-The `PropertySourceFactory` interface has a single method, `createPropertySource` that needs to be implemented. The `YamlPropertySourceFactory` shown above will load a YAML file into a `java.util.Properties` object and wrap that in a `PropertiesPropertySource` (one of the `PropertySource` implementations). To load the YAML file the [`YamlPropertiesFactoryBean`][5] can be used. A `PropertySource` is required to have a name and according to the contract it can be either given by the `name` attribute on the `@PropertySource` annotation or it will be derived from the `Resource.getDescription` method.
-
 Next the YAML file, `blog.yaml` which we want to load:
 
 ```yaml
@@ -53,7 +60,7 @@ foo:
   bar: baz
 ```
 
-Now that there is `PropertySourceFactory` that can load YAML an `@PropertySource` annotation that will use this `PropertySourceFactory` can be added to the configuration.
+The `@PropertySource` annotation has a `factory` attribute. This is the attribute used to specify which `PropertySourceFactory` to use. Here we give it the value `YamlPropertySourceFactory.class`. The value attribute contains the name of the YAML resource to load.
 
 ```java
 package biz.deinum.blog.yaml;
@@ -83,8 +90,8 @@ public class YamlPropertysourceApplication {
 **NOTE:** Although this sample uses Spring Boot this _isn't required_ it works with plain Spring (version 4.3 or up) as well.
 
 When running this application it will
-. Print the name and type of all the `PropertySource` instances created for this `ApplicationContext`
-. Get the value from `foo.bar` which comes from the `blog.yaml` file
+* Print the name and type of all available `PropertySource`s
+* Get the value from `foo.bar` which comes from the `blog.yaml` file
 
 The output should be something like the image below:
 
@@ -96,3 +103,5 @@ The output should be something like the image below:
 [4]: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/DefaultPropertySourceFactory.html
 [5]: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/config/YamlPropertiesFactoryBean.html
 [6]: https://stackoverflow.com/questions/43020491/spring-boot-external-configuration-of-property-file
+[7]: https://jira.spring.io/browse/SPR-8963
+[8]: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/PropertySource.html#name--
