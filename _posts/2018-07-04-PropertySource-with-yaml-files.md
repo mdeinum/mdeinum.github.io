@@ -23,6 +23,7 @@ To load a YAML file Spring provides the [`YamlPropertiesFactoryBean`][5]. This c
 ```java
 package biz.deinum.blog.yaml;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -42,11 +43,19 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
         return new PropertiesPropertySource(sourceName, propertiesFromYaml);
     }
 
-    private Properties loadYamlIntoProperties(EncodedResource resource) {
-        YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-        factory.setResources(resource.getResource());
-        factory.afterPropertiesSet();
-        return factory.getObject();
+    private Properties loadYamlIntoProperties(EncodedResource resource) throws FileNotFoundException {
+        try {
+            YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
+            factory.setResources(resource.getResource());
+            factory.afterPropertiesSet();
+            return factory.getObject();
+        } catch (IllegalStateException e) {
+            // for ignoreResourceNotFound
+            Throwable cause = e.getCause();
+            if (cause instanceof FileNotFoundException)
+                throw (FileNotFoundException) e.getCause();
+            throw e;
+        }
     }
 }
 ```
