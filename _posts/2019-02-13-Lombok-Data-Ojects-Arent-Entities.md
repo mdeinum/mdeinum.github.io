@@ -82,8 +82,7 @@ public abstract class BaseEntity {
     }}
 }
 ```
-
-Now when `Book` extends the `BaseEntity` Lombok will backoff in generating the `equals` method, as we provide one ourself. The same applies to the `hashCode` method.
+Now when `Book` extends the `BaseEntity`, Lombok needs to know if it needs to generate an `equals` and `hashCode` method. As it should backoff adding `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` to the `Book` and `Author` entity will (kind of) disable the `equals` and `hashCode` generation.
 
 ## The generated `toString` method
 There might be an issue when using the default `toString` method. Not with simple entities but when entities that reference other entities or in a collection.
@@ -153,6 +152,6 @@ public class Book {
 ## Conclusion
 You can use the `@Data` annotation from Lombok with `@Entity` objects, however there are somethings you need to take into account.
 
-1. Always write your own `equals` and `hashCode` methods that properly works for JPA. You might want to include these in a base entity you extend.
-2. Be cautious in what to include in the generated `toString`. You might want to include a default `toString` in a base entity class.
-3. Because of 1 and 2 you might be better of just using the `@Getter` / `@Setter` annotations instead of the `@Data` annotation. As that is what generally is needed/wanted. 
+1. Always write your own `equals` and `hashCode` methods that properly works for JPA. You might want to include these in a base entity you extend and disable generating those methods by adding `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` to your entities.
+2. Be cautious in what to include in the generated `toString`. You might want to include a default `toString` in a base entity class and disable generating a `toString` using `@ToString(onlyExplicitlyIncluded=true)`.
+3. Because of 1 and 2 you are probably better of just using the `@Getter` / `@Setter` annotations instead of the `@Data` annotation. As that is what generally is needed/wanted.
