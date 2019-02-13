@@ -7,7 +7,8 @@ categories:
 tags:
 - lombok
 - code generation
-published: false
+- jpa
+published: true
 ---
 When using a framework like [Lombok](https://projectlombok.org/) it is very tempting and eays to use its [`@Data`](https://projectlombok.org/features/Data) annotation.
 
