@@ -10,9 +10,12 @@ tags:
 - jpa
 published: true
 ---
+
 When using a framework like [Lombok](https://projectlombok.org/) it is very tempting and eays to use its [`@Data`](https://projectlombok.org/features/Data) annotation.
 
 > All together now: A shortcut for `@ToString`, `@EqualsAndHashCode`, `@Getter` on all fields, `@Setter` on all non-final fields, and `@RequiredArgsConstructor`! (Source: Lombok Documentation)
+
+**TL;DR** You probably don't want to use `@Data` annotation with `@Entity` classes but rather only use the `@Getter` and `@Setter` methods and implement your own `equals`, `hashCode` and `toString` methods.
 
 When placing the convinient `@Data` annotation on an `@Entity` annotated class that might look like a nice idea.
 Give the following 2 entities, `Book` and `Author` lets illustrate what the challenges.
