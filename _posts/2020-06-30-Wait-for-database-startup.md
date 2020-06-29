@@ -1,16 +1,17 @@
 ---
 layout: post
-title: Wait for database to startup
+title: Delay startup of your Spring Boot application until your DB is up.
 date: 2020-06-30
 categories:
 - Java
 - Spring
 tags:
 - configuration
+- micro-services
 published: true
 ---
 
-When using [Spring Boot](https://spring.io/projects/spring-boot or just plain [Spring Framework](https://spring.io/projects/spring-framework) it might be that you want to delay the startup of your application until a proper connection to the database can be made. This might be even more the case when using container technologies, like [Docker](https://www.docker.com/).
+When using [Spring Boot](https://spring.io/projects/spring-boot) or just plain [Spring Framework](https://spring.io/projects/spring-framework) it might be that you want to delay the startup of your application until a proper connection to the database can be made. This might be even more the case when using container technologies, like [Docker](https://www.docker.com/).
 
 I recently came across the [DatabaseStartupValidator](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/support/DatabaseStartupValidator.html) which has been part of the Spring Framework since 2003!. This little gem will delay the further startup of your application until a connection to the database can be made. It, by default, will try every second to connect to the DB and simply catches the exception. It will try for 60 seconds and after that will fail if no connection can be made (all of these properties are configurable).
 
