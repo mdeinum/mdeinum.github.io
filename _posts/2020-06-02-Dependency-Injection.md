@@ -367,9 +367,35 @@ class MoneyTransferServiceTest {
 <a id="setter-injection"></a>
 ### Setter / Property Injection
 
-A class has so called setter methods to set the dependencies needed for an object instance. Generally those setters follow the [Java Beans Specification](https://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/). For the `MoneyTransferService` that would mean adding a `setAccountRepository` and `setTransactionRepository` method (see [Listing 12](#listing12)). Next to inject the dependencies the setters need to be called before invoking any logic on the `MoneyTransferService` (see [Listing 13](#listing13)).
+A class has so called setter methods to set the dependencies needed for an object instance. Generally those setters follow the [Java Beans Specification](https://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/). For the `MoneyTransferService` that would mean adding a `setAccountRepository` and `setTransactionRepository` method (see [Listing 12](#listing12)). Before the `MoneyTransferService` can be used the setters need to be called before invoking any logic on the (see [Listing 13](#listing13)).
 
 <a id="listing12"></a>
+```java
+class MoneyTransferService extends AbstractMoneyTransferService {
+
+	private final AccountRepository accountRepository;
+	private final TransactionRepository transactionRepository;
+
+	public MoneyTransferService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+		super();
+		this.accountRepository = accountRepository;
+		this.transactionRepository = transactionRepository;
+	}
+
+	@Override
+	protected AccountRepository getAccountRepository() {
+		return this.accountRepository;
+	}
+
+	@Override
+	protected TransactionRepository getTransactionRepository() {
+		return this.transactionRepository;
+	}
+}
+```
+##### Listing 12: Setter injection based `MoneyTransferService`
+
+<a id="listing13"></a>
 ```java
 public class TransferMoney {
 
@@ -390,13 +416,53 @@ public class TransferMoney {
 		logger.info("Money Transfered: {}", transaction);
 	}
 }
-
 ```
-##### Listing 12: Setter injection based `MoneyTransferService`
+##### Listing 13: Setter injection based runner
+
+The test case can be modified as well (see [Listing 14](#listing14))
+<a id="listing14"></a>
+```java
+class MoneyTransferServiceTest {
+
+    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+    private final MoneyTransferService service = new MoneyTransferService();
+
+    @BeforeEach
+    public void setup() {
+        service.setAccountRepository(this.mockAccountRepository);
+        service.setTransactionRepository(this.mockTransactionRepository); 
+    }
+
+    @Test
+    public void transferMoney() {
+        // Given
+        Account act1 = new Account("123456");
+        act1.debit(BigDecimal.valueOf(1000L));
+        when(mockAccountRepository.find("123456")).thenReturn(act1);
+        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+        //When
+        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+        //Then
+        assertNotNull(transaction);
+        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+    }
+}
+```
+##### Listing 15: Setter injection based test case
+
+The setup for the service is done in the `setup` method, the setters are called before a test method is invoked. This additional setup is now required because it isn't possible to set the mocks directly.
+
+Instead of manually calling the setter methods, it is also possible to use the Java Introspection API. This assumes the bean follows the java bean specification and allows for dynamically detecting properties and set the values, when a setter is available! (See [Listing15](#listing15) and [Listing 16](#listing16)]).
 
 
 <a id="method-injection"></a>
 ### Method Injection
+Method injection is similar to setter injection in that a method is being used to inject the dependencies. Where a setter accepts a single argument with method injection you can provide multiple arguments. So for the `MoneyTransferService` instead of 2 setter methods we could provide 1 method used to inject the dependencies into the service (see [Listing 17](#listing17))
+
+```java
+```
 
 <a id="interface-injection"></a>
 ### Interface-based Injection
