@@ -19,7 +19,7 @@ baseurl: ""
 # Of course don't forget to change the username and projectname to YOUR username and project
 
 # Name of website
-title: Marten Deinum
+title: "Marten Deinum"
 
 # Short description of your site
 description: My place on the internet where I occasionally write about Java / Spring Software Development
@@ -53,7 +53,7 @@ round-avatar: true
 # Change all these values or delete the ones you don't want.
 # Important: you must keep the "name" parameter, everything else you can remove
 author:
-  name: Marten Deinum
+  name: "Marten Deinum"
 
 # Select your active Social Network Links.
 # Uncomment the links you want to show in the footer and add your information to each link.
