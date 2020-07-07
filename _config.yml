@@ -9,7 +9,7 @@
 # baseurl is the website's URL without the hostname
 
 # If you are building a simple GitHub user page (http://username.github.io) then use these settings:
-url: "http://mdeinum.github.io"
+url: "https://deinum.biz"
 baseurl: ""
 
 # If you are building a GitHub project page then use these settings:
@@ -150,7 +150,7 @@ footer-link-col: "#404040"
 #gtag: ""
 
 # Fill in your Google Analytics ID to track your website using Google Analytics
-#google_analytics: ""
+google_analytics: "UA-171834614-1"
 
 # Google Tag Manager ID
 #gtm: ""
