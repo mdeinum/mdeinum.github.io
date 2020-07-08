@@ -7,6 +7,8 @@ categories:
 - Spring
 tags:
 - configuration
+- dependency injection
+- autowiring
 published: true
 ---
 
