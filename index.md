@@ -2,9 +2,8 @@
 layout: page
 title: Welcome
 use-site-title: true
+css: '/css/home.css'
 ---
-<h1 class="text-center">Current Projects</h1>
-
 <div class="spacer"></div>
 
 <div class="row text-center">
@@ -46,7 +45,7 @@ use-site-title: true
         </span>
         <h4>{{- gh-project -}}</h4>
         <hr class="seperator">
-        <p class="text-muted">tility classes collected and created over the years. Some of these might be useful to others</p>
+        <p class="text-muted">Utility classes collected and created over the years. Some of these might be useful to others</p>
         <hr class="seperator">
         <img src="https://img.shields.io/github/forks/{{- gh-user -}}/{{- gh-project -}}.svg?style=social&label=Fork" alt="Github" title="Github Forks">
         <img src="https://img.shields.io/github/stars/{{- gh-user -}}/{{- gh-project -}}.svg?style=social&label=Stars" alt="Github" title="Github Stars">
