@@ -8,13 +8,15 @@ show-avatar: false
 ---
 <div class="spacer"></div>
 
-<div class="row" style="background: #222;">
+<div class="row" style="background: #111; padding: 20px; color: #fff;">
   <div class="col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-12 col-xs-offset-0">
     <img src="https://mdeinum.files.wordpress.com/2020/07/headshot.png" alt="">
   </div>
   <div class="col-md-8 col-md-offset-0 col-sm-8 col-sm-offset-0 col-xs-12 col-xs-offset-0 text-left">My name is <strong>Marten Deinum</strong> and I'm the (co)author of a few <a href="https://deinum.biz/books/">books</a> related to Spring. I also work as a Consultant for a company called <a rel="noreferrer noopener" href="https://conspect.nl" target="_blank">Conspect</a> and I work as a <a rel="noreferrer noopener" href="https://rebeldiving.nl" target="_blank">diving instructor</a>.<br><br>I maintain a few <a rel="noreferrer noopener" href="https://www.github.com/mdeinum" target="_blank">projects</a> containing utilities to make development of applications with Java and Spring easier. When not coding or diving I answer Spring related questions on <a rel="noreferrer noopener" href="https://stackoverflow.com/" target="_blank">StackOverflow</a>.
   </div>
 </div>
+
+----
 
 <h1 class="text-center">Current Projects</h1>
 
