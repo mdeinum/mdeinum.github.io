@@ -4,12 +4,13 @@ title: Welcome
 use-site-title: true
 cover-img: { "/assets/img/IMG_0031.jpg" : "Dolphine @ Wadi Lachmi - 2005"}
 css: '/css/home.css'
+show-avatar: false
 ---
 <div class="spacer"></div>
 
-<div class="row text-center">
+<div class="row text-center" style="float: left; clear: none;">
+<div><img style="width:150px;vertical-align:text-top" src="https://mdeinum.files.wordpress.com/2020/07/headshot.png" alt=""></div>
 <div class="hero">My name is <strong>Marten Deinum</strong> and I'm the (co)author of a few <a href="https://deinum.biz/books/">books</a> related to Spring. I also work as a Consultant for a company called <a rel="noreferrer noopener" href="https://conspect.nl" target="_blank">Conspect</a> and I work as a <a rel="noreferrer noopener" href="https://rebeldiving.nl" target="_blank">diving instructor</a>.<br><br>I maintain a few <a rel="noreferrer noopener" href="https://www.github.com/mdeinum" target="_blank">projects</a> containing utilities to make development of applications with Java and Spring easier. When not coding or diving I answer Spring related questions on <a rel="noreferrer noopener" href="https://stackoverflow.com/" target="_blank">StackOverflow</a>.</div>
-<div style="float: left;"><img style="width:150px;vertical-align:text-top" src="https://mdeinum.files.wordpress.com/2020/07/headshot.png" alt=""></div>
 
 </div>
 
