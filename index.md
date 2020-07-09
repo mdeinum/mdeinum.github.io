@@ -2,6 +2,7 @@
 layout: page
 title: Welcome
 use-site-title: true
+cover-img: { "/assets/img/IMG_0031.jpg" : "Dolphine @ Wadi Lachmi - 2005"}
 css: '/css/home.css'
 ---
 <div class="spacer"></div>
