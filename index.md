@@ -1,7 +1,6 @@
 ---
 layout: page
 title: Welcome
-subtitle: My place on the internet
 use-site-title: true
 cover-img: { "/assets/img/IMG_0031.jpg" : "Dolphine @ Wadi Lachmi - 2005"}
 css: '/css/home.css'
@@ -9,7 +8,7 @@ show-avatar: false
 ---
 <div class="spacer"></div>
 
-<div class="row" style="background: #111; padding: 20px; color: #fff;">
+<div class="row intro">
   <div class="col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-12 col-xs-offset-0">
     <img src="https://mdeinum.files.wordpress.com/2020/07/headshot.png" alt="">
   </div>

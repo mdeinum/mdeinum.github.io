@@ -69,3 +69,11 @@ a.project-link:hover {
     padding-right: 15px;
     box-shadow: 1px 1px 10px #bbb;
 }
+
+.introduction {
+    background: #111; 
+    padding: 20px; 
+    color: #fff; 
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.1;
+}
