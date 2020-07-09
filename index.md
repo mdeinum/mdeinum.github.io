@@ -8,7 +8,7 @@ show-avatar: false
 ---
 <div class="spacer"></div>
 
-<div class="row intro">
+<div class="row introduction">
   <div class="col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-12 col-xs-offset-0">
     <img src="https://mdeinum.files.wordpress.com/2020/07/headshot.png" alt="">
   </div>
