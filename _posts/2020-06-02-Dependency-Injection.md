@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Dependency Injection in Java
-date: 2020-06-02
+date: 2020-07-22
 categories:
 - Java
 tags:
@@ -420,6 +420,7 @@ public class TransferMoney {
 ##### Listing 13: Setter injection based runner
 
 The test case can be modified as well (see [Listing 14](#listing14))
+
 <a id="listing14"></a>
 ```java
 class MoneyTransferServiceTest {
@@ -450,19 +451,95 @@ class MoneyTransferServiceTest {
     }
 }
 ```
-##### Listing 15: Setter injection based test case
+##### Listing 14: Setter injection based test case
 
 The setup for the service is done in the `setup` method, the setters are called before a test method is invoked. This additional setup is now required because it isn't possible to set the mocks directly.
 
-Instead of manually calling the setter methods, it is also possible to use the Java Introspection API. This assumes the bean follows the java bean specification and allows for dynamically detecting properties and set the values, when a setter is available! (See [Listing15](#listing15) and [Listing 16](#listing16)]).
-
-
 <a id="method-injection"></a>
 ### Method Injection
-Method injection is similar to setter injection in that a method is being used to inject the dependencies. Where a setter accepts a single argument with method injection you can provide multiple arguments. So for the `MoneyTransferService` instead of 2 setter methods we could provide 1 method used to inject the dependencies into the service (see [Listing 17](#listing17))
+Method injection is similar to setter injection in that a method is being used to inject the dependencies. Where a setter accepts a single argument with method injection you can provide multiple arguments. For the `MoneyTransferService` instead of 2 setter methods we could provide 1 method used to inject the dependencies into the service (see [Listing 15](#listing15))
 
+<a id="listing15"></a>
 ```java
+class MoneyTransferService extends AbstractMoneyTransferService {
+
+	private AccountRepository accountRepository;
+	private TransactionRepository transactionRepository;
+
+	@Override
+	protected AccountRepository getAccountRepository() {
+		return this.accountRepository;
+	}
+
+	@Override
+	protected TransactionRepository getTransactionRepository() {
+		return this.transactionRepository;
+	}
+
+	public void initialize(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+		this.accountRepository=accountRepository;
+		this.transactionRepository=transactionRepository;
+	}
+}
 ```
+##### Listing 15: Method injection based `MoneyTransferService`
+
+<a id="listing16"></a>
+```java
+public class TransferMoney {
+
+	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+
+	public static void main(String[] args) {
+		var transactionRepository = new MapBasedTransactionRepository();
+
+		var accountRepository = new MapBasedAccountRepository();
+		accountRepository.initialize();
+
+		var service = new MoneyTransferService();
+		service.initialize(accountRepository,transactionRepository); // Inject dependencies
+
+		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+
+		logger.info("Money Transfered: {}", transaction);
+	}
+}
+```
+##### Listing 16: Method injection based runner
+
+To be able to run the test case the `initialize` method would need to be called as well before each test, see [Listing 17](#listing17)
+
+<a id="listing17"></a>
+```java
+class MoneyTransferServiceTest {
+
+    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+    private final MoneyTransferService service = new MoneyTransferService();
+
+    @BeforeEach
+    public void setup() {
+        service.initialize(this.mockAccountRepository, this.mockTransactionRepository);
+    }
+
+    @Test
+    public void transferMoney() {
+        // Given
+        Account act1 = new Account("123456");
+        act1.debit(BigDecimal.valueOf(1000L));
+        when(mockAccountRepository.find("123456")).thenReturn(act1);
+        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+        //When
+        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+        //Then
+        assertNotNull(transaction);
+        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+    }
+}
+```
+##### Listing 17: Method injection based test case
+
 
 <a id="interface-injection"></a>
 ### Interface-based Injection
