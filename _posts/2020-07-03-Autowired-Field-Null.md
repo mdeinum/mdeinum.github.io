@@ -10,6 +10,8 @@ tags:
 - dependency injection
 - autowiring
 published: true
+gh-repo: mdeinum/blog-autowiring-null
+gh-badge: star	
 ---
 
 A commonly asked question on sites like StackOverflow is ["Why is the field i'm autowiring `null`"](https://stackoverflow.com/questions/19896870/why-is-my-spring-autowired-field-null). When this happens it generally is an error of the user as an autowired field in Spring cannot be `null`. At startup Spring will try to satisfy all the dependencies of a bean, if the depenencies cannot be satisfied starting the application will stop with an `UnsatisfiedDependencyException`.
@@ -95,9 +97,10 @@ Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No q
 If the application starts and your field **appears** to be `null` it generally due to on of the following issues:
 
 1. [Using `@Autowired` on a `static` field](#static)
-2. [Instance of bean not visible to Spring](#instance)
-3. [Using AOP and invoking a `final`, `private` or default access method](#aop)
-4. [Using XML and haven't enabled annotation processing](#xml)
+2. [Omitted `@Autowired` on a field](#omitted)
+3. [Instance of bean not visible to Spring](#instance)
+4. [Using AOP and invoking a `final`, `private` or default access method](#aop)
+5. [Using XML and haven't enabled annotation processing](#xml)
 
 <a href="#static"></a>
 ## Using `@Autowired` on a `static` field
@@ -123,7 +126,6 @@ public class HelloWorldService {
         writer.write("Hello " + name);
     }
 }
-
 ```
 
 The following configuration will load the class and setup the needed `Writer` dependency. 
@@ -167,7 +169,77 @@ public class HelloWorldStatic {
 }
 ```
 
-The solution, as always depends, the most obvious one would be to remove the `static` keyword and it would work as it is now a regular field. However there might be a compeling reason to make the field `static`. If that is the case you can either use constructor, setter or method injection to set the `static` field. Although this should be considered a hack, imho, instead of a solution. 
+The solution, as often, depends, the most obvious one would be to remove the `static` keyword and it would work as it is now a regular field. However there might be a compeling reason to make the field `static`. If that is the case you can either use constructor, setter or method injection to set the `static` field. Although this should be considered a hack, imho, instead of a solution. 
+
+<a href="#static"></a>
+## Omitted `@Autowired` on a field
+
+Using the `HelloWorldService` below as a bean in a Spring application would fail. As there is no `@Autowired` (or `@Inject` or `@Resource`) on the field, Spring doesn't know it needs to inject a dependency into the field. So the field remains `null`.
+
+```java
+package biz.deinum.blog.autowiring.statik;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.Writer;
+
+@Service
+public class HelloWorldService {
+
+    private Writer writer;
+
+    public void sayHello(String name) throws IOException {
+        writer.write("Hello " + name);
+    }
+}
+```
+
+The following configuration will load the class and setup the needed `Writer` dependency. 
+
+```java
+package biz.deinum.blog.autowiring.statik;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import java.io.PrintWriter;
+import java.io.Writer;
+
+@Configuration
+@ComponentScan
+public class HelloWorldConfig {
+
+    @Bean
+    public Writer consoleWriter() {
+        return new PrintWriter(System.out);
+    }
+}
+```
+
+The following class with a `main` method will load the `HelloWorldConfig`, obtain the `HelloWorldService` from the `ApplicationContext` and invoke the `sayHello` method. The result will be a `NullPointerException` as the field isn't autowired. 
+
+```java
+package biz.deinum.blog.autowiring.statik;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class HelloWorldStatic {
+
+    public static void main(String[] args) throws Exception {
+
+        var ctx = new AnnotationConfigApplicationContext(HelloWorldConfig.class);
+        var service = ctx.getBean(HelloWorldService.class);
+        service.sayHello("World"); // Throws NullPointerException due to no injection metadata present
+    }
+}
+```
+
+To fix you can add the `@Autowired` dependency to the field or even better use constructor based injection (which doesn't require an annotation!).
+
+
 
 <a href="#instance"></a>
 ## Instance of bean not visible to Spring
@@ -409,8 +481,9 @@ public class HelloWorldXml {
 
 As a rule of thumb an autowired field in Spring cannot be `null`. If it looks like it is `null` the error is generally on the user side of things and can be tracked down to one of the following issues:
 1. [Using `@Autowired` on a `static` field](#static)
-2. [Instance of bean not visible to Spring](#instance)
-3. [Using AOP and invoking a `final`, `private` or default access method](#aop)
-4. [Using XML and haven't enabled annotation processing](#xml)
+2. [Omitted `@Autowired` on a field](#omitted)
+3. [Instance of bean not visible to Spring](#instance)
+4. [Using AOP and invoking a `final`, `private` or default access method](#aop)
+5. [Using XML and haven't enabled annotation processing](#xml)
 
 The code can be found on [GitHub](https://github.com/mdeinum/blog-autowiring-null.git).
