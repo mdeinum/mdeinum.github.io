@@ -10,7 +10,7 @@ tags:
 published: true
 ---
 
-Before diving in lets take a look 2 definitions of dependency injection (according to Wikipedia). 
+Before diving in lets take a look at 2 definitions of dependency injection (according to Wikipedia). 
 
 > **Dependency Injection** is a technique in which an object receives other objects that it depends on. These other objects are called dependencies. 
 > -- <cite><a href="https://en.wikipedia.org/wiki/Dependency_injection">Wikipedia</a></cite>
@@ -18,9 +18,9 @@ Before diving in lets take a look 2 definitions of dependency injection (accordi
 > **Dependency injection** is one form of the broader technique of [inversion of control](https://en.wikipedia.org/wiki/Inversion_of_control). A client who wants to call some services should not have to know how to construct those services.
 > -- <cite><a href="https://en.wikipedia.org/wiki/Dependency_injection">Wikipedia</a></cite>
 
-In short when an object needs another object it should be handed to the object it needs.
+In short. when an object needs another object it should be handed to the object it needs.
 
-Why would you need dependency injection? Lets take a look at a code for a transfer money system:
+Why would you need dependency injection? Lets take a look at the code for a transfer money system:
 
 There is the `MoneyTransferService` (see [Listing 1](#listing1)) which has a single method to transfer money from one account to another. The business logic is implemented in a base class `AbstractMoneyTransferService` (see [Listing 2](#listing2)). 
 
@@ -58,9 +58,9 @@ public abstract class AbstractMoneyTransferService implements MoneyTransferServi
 ```
 ##### Listing 2: Abstract class implementing the business logic
 
-**NOTE:** This base class is actually an implementation of a different inversion of control mechanism called [Template Method Pattern](https://en.wikipedia.org/wiki/Template_method_pattern)!
+**NOTE:** This base class is an implementation of a different inversion of control mechanism called [Template Method Pattern](https://en.wikipedia.org/wiki/Template_method_pattern)!
 
-Now we need a class that provides the needed `AccountRepository` and `TransactionRepository` so the class can fullfil the `transfer` operation. The `SimpleMoneyTransferService` (see [Listing 3](#listing3)) is an implementation that doesn't use dependency injection but rather instantiates the needed classes by itself. 
+Now we need a class that provides the needed `AccountRepository` and `TransactionRepository` so the class can fulfill the `transfer` operation. The `SimpleMoneyTransferService` (see [Listing 3](#listing3)) is an implementation that doesn't use dependency injection but rather instantiates the needed classes by itself. 
 
 <a id="listing3"></a>
 
@@ -113,16 +113,16 @@ Running this class will transfer money from one account to another, this fact is
 
 The problem with the code above is that the `SimpleMoneyTransferService` is now tied to our specific `Map` based implementations of the 2 repositories. It also needs to know that the `MapBasedAccountRepository` needs to be initialized by calling the `initialize` method. The class using the repository now needs to have intimate knowledge of how to construct a class and bootstrap it. Another issue is what if the implementation used a quite expensive resource like a `DataSource` or remote file source, you probably wanted to reuse a single shared instance in that case. 
 
-Finally these default implementations makes it also quite hard to test, you could take a stab at it with something like [PowerMock](https://github.com/powermock/powermock) to replace the constructor or `final` fields but that would be quite a hack for a test.
+Finally, these default implementations make it also quite hard to test, you could take a stab at it with something like [PowerMock](https://github.com/powermock/powermock) to replace the constructor or `final` fields but that would be quite a hack for a test.
 
 ## Dependency Injection
-As mentioned in the introduction _dependency injection_ is a way of handing the dependencies of an object to the object in question. In the case of the sample above we would hand the dependencies to both repositories to the `MoneyTransferService` instead of it being responsible for it. Injecting the dependencies can be done in 4 ways (or a combination thereof):
+As mentioned in the introduction _dependency injection_ is a way of handling the dependencies of an object to the object in question. In the case of the sample above, we would hand the dependencies to both repositories to the `MoneyTransferService` instead of it being responsible for it. Injecting the dependencies can be done in 5 ways (or a combination thereof):
 
 1. [Field inject injection](#field-injection)
 2. [Constructor injection](#constructor-injection)
 3. [Setter/Property injection](#setter-injection)
-3. [Method injection](#method-injection)
-4. [Interface based](#interface-injection)
+4. [Method injection](#method-injection)
+5. [Interface based](#interface-injection)
 
 <a id="field-injection"></a>
 ### Field Injection
@@ -151,7 +151,7 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 ```
 ##### Listing 5: Field injection based `MoneyTransferService`
 
-Now as the `MoneyTransferService` itself doesn't control those dependencies they need to be handed to the service by an external class. The dependency injection can be done by `name` or by `type`. When using type based injection, the fields of the class would need to be retrieved, and see if there is an instance that matches the type or name. [Listing 6](#listing6) shows a helper class to do name or type based field injection. 
+Now as the `MoneyTransferService` itself doesn't control those dependencies they need to be handed to the service by an external class. The dependency injection can be done by `name` or by `type`. When using type-based injection, the fields of the class would need to be retrieved, and see if there is an instance that matches the type or name. [Listing 6](#listing6) shows a helper class to do name or type-based field injection. 
 
 <a id="listing6"></a>
 
@@ -211,11 +211,11 @@ public class ReflectionUtil {
 ```
 ##### Listing 6: Field Injection Helper Class
 
-When doing injection by name, the list of declared fields for a class is retrieved, and when the field on the target object, here the `MoneyTransferService` is being looked up in the context map and set as a value. Before the field can be set it needs to be made accessible (generally those fields have the `private` access modifier). If the type doesn't match one cannot set the value, this is something you either need to check or let it blow up when setting an illegal type. 
+When doing injection by name, the list of declared fields for a class is retrieved, and when the field on the target object, here the `MoneyTransferService` is being looked up in the context map and set as a value. Before the field can be set it needs to be made accessible (generally, those fields have the `private` access modifier). If the type doesn't match one cannot set the value, this is something you either need to check or let it blow up when setting an illegal type. 
 
 When injecting by type, the values are injected by inspecting the type compatibility of the fields in the class and the values in the context map. 
 
-The runner, as shown in [Listing 7](#listing7) can be used to do a money tranfser. First the needed dependencies are constructed and properly initialized, before injecting them (using reflection) into the `MoneyTransferService`. 
+The runner, as shown in [Listing 7](#listing7) can be used to do a money transfer. First, the needed dependencies are constructed and properly initialized, before injecting them (using reflection) into the `MoneyTransferService`. 
 
 <a id="listing7"></a>
 
@@ -247,7 +247,7 @@ public class TransferMoney {
 ```
 ##### Listing 7: Field injection based runner
 
-Although it works, it requires working with the Java Reflection API (which is not necessarily a bad thing!) but it kind of hides the needed dependencies from external uses. You need to initimatily know the class to now its dependencies, instead of looking at a constructor or Javadoc. 
+Although it works, it requires working with the Java Reflection API (which is not necessarily a bad thing!) but it kind of hides the needed dependencies from external uses. You need to intimately know the class to now its dependencies, instead of looking at a constructor or Javadoc. 
 
 The advantage is that the `MoneyTransferService` now doesn't need to know what type of dependencies it needs and that it needs initializing. For a unit test you can now easily use a mocking library like [Mockito](https://mockito.org) to inject a mock (See [Listing 8](#listing8).
 
@@ -319,7 +319,7 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 ```
 ##### Listing 9: Construction injection based `MoneyTransferService`
 
-To make a money tranfer, first the repositories need to be constructed before the service can be constructed with those dependencies (See [Listing 10](#listing10)).
+To make a money transfer, the repositories need to be constructed before the service can be constructed with those dependencies (See [Listing 10](#listing10)).
 
 <a id="listing10"></a>
 
@@ -344,7 +344,7 @@ public class TransferMoney {
 ```
 ##### Listing 10: Construction injection based runner
 
-The usage of the code is nice and clean, no reflection is involved, just regular Java constructs. It is also not possible to construct an object in an invalid state, because all the fields are initialized before use. You could add a check in the constructor that a dependency isn't allowed to be `null` to even prevent illegal use further. 
+The usage of the code is nice and clean, no reflection is involved, just regular Java constructs. It is also not possible to construct an object in an invalid state because all the fields are initialized before use. You could add a check in the constructor that a dependency isn't allowed to be `null` to even prevent illegal use further. 
 
 The same modification can be done for the test case (see [Listing 11](#listing11)).
 
@@ -378,7 +378,7 @@ class MoneyTransferServiceTest {
 <a id="setter-injection"></a>
 ### Setter / Property Injection
 
-A class has so called setter methods to set the dependencies needed for an object instance. Generally those setters follow the [Java Beans Specification](https://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/). For the `MoneyTransferService` that would mean adding a `setAccountRepository` and `setTransactionRepository` method (see [Listing 12](#listing12)). Before the `MoneyTransferService` can be used the setters need to be called before invoking any logic on the (see [Listing 13](#listing13)).
+A class has so-called setter methods to set the dependencies needed for an object instance. Generally, those setters follow the [Java Beans Specification](https://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/). For the `MoneyTransferService` that would mean adding a `setAccountRepository` and `setTransactionRepository` method (see [Listing 12](#listing12)). Before the `MoneyTransferService` can be used the setters need to be called before invoking any logic on the (see [Listing 13](#listing13)).
 
 <a id="listing12"></a>
 
@@ -564,7 +564,7 @@ class MoneyTransferServiceTest {
 <a id="interface-injection"></a>
 ### Interface-based Injection
 
-Interface-based injection is based on interface and that the program knowns what to do with it. In the money transfer sample 2 interfaces could be added to support injection of the 2 repositories (see [Listing 18](#listing18) )
+Interface-based injection is based on interface and that the program knows what to do with it. In the money transfer sample 2 interfaces could be added to support injection of the 2 repositories (see [Listing 18](#listing18) )
 
 <a id="listing18"></a>
 
@@ -582,7 +582,7 @@ public interface TransactionRepositoryAware {
 
 ##### Listing 18: Interfaces for injection
 
-As can be see in Listing 18, there are 2 interfaces which define how to inject a certain dependency. To get the dependencies into the `MoneyTransferService` it would need to implement those 2 interfaces and we would need to check (in the injector) which dependencies it needs (see [Listing 19](#listing19) and [Listing 20](#listing20)). This style of dependency injection is often used when using IoC containers like [Spring](https://spring.io/projects/spring-framework) or [Guice](https://github.com/google/guice) when needing some special infrastructure components (like the Spring `ApplicationContext`).
+As can be seen in Listing 18, 2 interfaces define how to inject a certain dependency. To get the dependencies into the `MoneyTransferService` it would need to implement those 2 interfaces and we would need to check (in the injector) which dependencies it needs (see [Listing 19](#listing19) and [Listing 20](#listing20)). This style of dependency injection is often used when using IoC containers like [Spring](https://spring.io/projects/spring-framework) or [Guice](https://github.com/google/guice) when needing some special infrastructure components (like the Spring `ApplicationContext`).
 
 <a id="listing19"></a>
 
@@ -697,3 +697,15 @@ class MoneyTransferServiceTest {
 }
 ```
 ##### Listing 17: Interface injection based test case
+
+# Summary
+
+Dependency Injection can be done in different forms in your application and it doesn't have to rely on frameworks or features like Spring, Guice or CDI. You can start using it in your own applications right now. Different forms of dependency injection exists and have different usages. 
+
+1. [Field inject injection](#field-injection)
+2. [Constructor injection](#constructor-injection)
+3. [Setter/Property injection](#setter-injection)
+4. [Method injection](#method-injection)
+5. [Interface based](#interface-injection)
+
+Which one to use depends on the use case and if you are using a framework or not. However it it probably best to use [constructor-based](#constructor-injection) dependency injection. The others you might come across when using frameworks or features of JEE. 
