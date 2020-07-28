@@ -1,13 +1,13 @@
 ---
 layout: post
 title: Dependency Injection in Java
-date: 2020-07-22
+date: 2020-07-28
 categories:
 - Java
 tags:
 - configuration
 - dependency injection
-published: false
+published: true
 ---
 
 Before diving in lets take a look 2 definitions of dependency injection (according to Wikipedia). 
@@ -22,9 +22,10 @@ In short when an object needs another object it should be handed to the object i
 
 Why would you need dependency injection? Lets take a look at a code for a transfer money system:
 
-There is the `MoneyTransferService` (see [Listing 1](#listing1)) which has a single method to transfer money from one account to another. The business logic is implemented in an abstract base class `AbstractMoneyTransferService` (see [Listing 2](#listing2)). 
+There is the `MoneyTransferService` (see [Listing 1](#listing1)) which has a single method to transfer money from one account to another. The business logic is implemented in a base class `AbstractMoneyTransferService` (see [Listing 2](#listing2)). 
 
 <a id="listing1"></a>
+
 ```java
 public interface MoneyTransferService {
 
@@ -34,6 +35,7 @@ public interface MoneyTransferService {
 ##### Listing 1: MoneyTransferService interface
 
 <a id="listing2"></a>
+
 ```java
 public abstract class AbstractMoneyTransferService implements MoneyTransferService {
 
@@ -61,6 +63,7 @@ public abstract class AbstractMoneyTransferService implements MoneyTransferServi
 Now we need a class that provides the needed `AccountRepository` and `TransactionRepository` so the class can fullfil the `transfer` operation. The `SimpleMoneyTransferService` (see [Listing 3](#listing3)) is an implementation that doesn't use dependency injection but rather instantiates the needed classes by itself. 
 
 <a id="listing3"></a>
+
 ```java
 public class SimpleMoneyTransferService extends AbstractMoneyTransferService {
 
@@ -90,6 +93,7 @@ public class SimpleMoneyTransferService extends AbstractMoneyTransferService {
 To make a money transfer the class as shown in [Listing 4](#listing4) can be used. It will construct a `SimpleMoneyTransferService` and call the `transfer` method on it. This class is also going to be used, with some modifications, in the later samples. 
 
 <a id="listing4"></a>
+
 ```java
 public class TransferMoney {
 
@@ -126,6 +130,7 @@ As mentioned in the introduction _dependency injection_ is a way of handing the 
 Field injection is the practice of defining a field and with reflection setting the value of those fields. The `MoneyTransferService` as shown in [Listing 5](#listing5), has 2 fields to represent the needed dependencies. 
 
 <a id="listing5"></a>
+
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
@@ -149,6 +154,7 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 Now as the `MoneyTransferService` itself doesn't control those dependencies they need to be handed to the service by an external class. The dependency injection can be done by `name` or by `type`. When using type based injection, the fields of the class would need to be retrieved, and see if there is an instance that matches the type or name. [Listing 6](#listing6) shows a helper class to do name or type based field injection. 
 
 <a id="listing6"></a>
+
 ```java
 public class ReflectionUtil {
 
@@ -212,6 +218,7 @@ When injecting by type, the values are injected by inspecting the type compatibi
 The runner, as shown in [Listing 7](#listing7) can be used to do a money tranfser. First the needed dependencies are constructed and properly initialized, before injecting them (using reflection) into the `MoneyTransferService`. 
 
 <a id="listing7"></a>
+
 ```java
 public class TransferMoney {
 
@@ -225,7 +232,7 @@ public class TransferMoney {
         var service = new MoneyTransferService();
 
 
-        Map<String, Object> context = Map.of(
+        var context = Map.of(
                 "accountRepository", accountRepository,
                 "transactionRepository", transactionRepository);
         setFieldsByName(service, context);
@@ -245,6 +252,7 @@ Although it works, it requires working with the Java Reflection API (which is no
 The advantage is that the `MoneyTransferService` now doesn't need to know what type of dependencies it needs and that it needs initializing. For a unit test you can now easily use a mocking library like [Mockito](https://mockito.org) to inject a mock (See [Listing 8](#listing8).
 
 <a id="listing8"></a>
+
 ```java
 class MoneyTransferServiceTest {
 
@@ -264,7 +272,7 @@ class MoneyTransferServiceTest {
     @Test
     public void transferMoney() {
         // Given
-        Account act1 = new Account("123456");
+        var act1 = new Account("123456");
         act1.debit(BigDecimal.valueOf(1000L));
         when(mockAccountRepository.find("123456")).thenReturn(act1);
         when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
@@ -285,6 +293,7 @@ class MoneyTransferServiceTest {
 Constructor based injection is creating a constructor that accepts the dependencies. The main benefit of this is that it is clear upon construction which dependencies are needed by a class to operate (see [Listing 9](#listing9)).
 
 <a id="listing9"></a>
+
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
@@ -313,6 +322,7 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 To make a money tranfer, first the repositories need to be constructed before the service can be constructed with those dependencies (See [Listing 10](#listing10)).
 
 <a id="listing10"></a>
+
 ```java
 public class TransferMoney {
 
@@ -339,6 +349,7 @@ The usage of the code is nice and clean, no reflection is involved, just regular
 The same modification can be done for the test case (see [Listing 11](#listing11)).
 
 <a id="listing11"></a>
+
 ```java
 class MoneyTransferServiceTest {
 
@@ -370,17 +381,12 @@ class MoneyTransferServiceTest {
 A class has so called setter methods to set the dependencies needed for an object instance. Generally those setters follow the [Java Beans Specification](https://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/). For the `MoneyTransferService` that would mean adding a `setAccountRepository` and `setTransactionRepository` method (see [Listing 12](#listing12)). Before the `MoneyTransferService` can be used the setters need to be called before invoking any logic on the (see [Listing 13](#listing13)).
 
 <a id="listing12"></a>
+
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
-	private final AccountRepository accountRepository;
-	private final TransactionRepository transactionRepository;
-
-	public MoneyTransferService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-		super();
-		this.accountRepository = accountRepository;
-		this.transactionRepository = transactionRepository;
-	}
+	private AccountRepository accountRepository;
+	private TransactionRepository transactionRepository;
 
 	@Override
 	protected AccountRepository getAccountRepository() {
@@ -391,11 +397,22 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 	protected TransactionRepository getTransactionRepository() {
 		return this.transactionRepository;
 	}
+
+	public void setAccountRepository(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
+	}
+
+	public void setTransactionRepository(TransactionRepository transactionRepository) {
+		this.transactionRepository = transactionRepository;
+	}
+
 }
+
 ```
 ##### Listing 12: Setter injection based `MoneyTransferService`
 
 <a id="listing13"></a>
+
 ```java
 public class TransferMoney {
 
@@ -422,6 +439,7 @@ public class TransferMoney {
 The test case can be modified as well (see [Listing 14](#listing14))
 
 <a id="listing14"></a>
+
 ```java
 class MoneyTransferServiceTest {
 
@@ -460,6 +478,7 @@ The setup for the service is done in the `setup` method, the setters are called 
 Method injection is similar to setter injection in that a method is being used to inject the dependencies. Where a setter accepts a single argument with method injection you can provide multiple arguments. For the `MoneyTransferService` instead of 2 setter methods we could provide 1 method used to inject the dependencies into the service (see [Listing 15](#listing15))
 
 <a id="listing15"></a>
+
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
@@ -485,6 +504,7 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 ##### Listing 15: Method injection based `MoneyTransferService`
 
 <a id="listing16"></a>
+
 ```java
 public class TransferMoney {
 
@@ -510,6 +530,7 @@ public class TransferMoney {
 To be able to run the test case the `initialize` method would need to be called as well before each test, see [Listing 17](#listing17)
 
 <a id="listing17"></a>
+
 ```java
 class MoneyTransferServiceTest {
 
@@ -540,11 +561,139 @@ class MoneyTransferServiceTest {
 ```
 ##### Listing 17: Method injection based test case
 
-
 <a id="interface-injection"></a>
 ### Interface-based Injection
 
+Interface-based injection is based on interface and that the program knowns what to do with it. In the money transfer sample 2 interfaces could be added to support injection of the 2 repositories (see [Listing 18](#listing18) )
+
+<a id="listing18"></a>
+
+```java
+public interface AccountRepositoryAware {
+
+    void setAccountRepository(AccountRepository repo);
+}
+
+public interface TransactionRepositoryAware {
+
+    void setTransactionRepository(TransactionRepository repo);
+}
+```
+
+##### Listing 18: Interfaces for injection
+
+As can be see in Listing 18, there are 2 interfaces which define how to inject a certain dependency. To get the dependencies into the `MoneyTransferService` it would need to implement those 2 interfaces and we would need to check (in the injector) which dependencies it needs (see [Listing 19](#listing19) and [Listing 20](#listing20)). This style of dependency injection is often used when using IoC containers like [Spring](https://spring.io/projects/spring-framework) or [Guice](https://github.com/google/guice) when needing some special infrastructure components (like the Spring `ApplicationContext`).
+
+<a id="listing19"></a>
+
+```java
+class MoneyTransferService extends AbstractMoneyTransferService implements AccountRepositoryAware, TransactionRepositoryAware  {
+
+	private AccountRepository accountRepository;
+	private TransactionRepository transactionRepository;
+
+	@Override
+	protected AccountRepository getAccountRepository() {
+		return this.accountRepository;
+	}
+
+	@Override
+	protected TransactionRepository getTransactionRepository() {
+		return this.transactionRepository;
+	}
+
+	@Override
+	public void setAccountRepository(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
+	}
+
+	@Override
+	public void setTransactionRepository(TransactionRepository transactionRepository) {
+		this.transactionRepository = transactionRepository;
+	}
+}
+```
+##### Listing 19: Interface injection based `MoneyTransferService`
+
+The `MoneyTransferService` now implements the 2 interfaces and when we want to inject we could call the setters but there would probably be an injector or helper class checking the interfaces and act accordingly. 
+<a id="listing20"></a>
+
+```java
+public class TransferMoney {
+
+	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+
+	public static void main(String[] args) {
+		var transactionRepository = new MapBasedTransactionRepository();
+
+		var accountRepository = new MapBasedAccountRepository();
+		accountRepository.initialize();
+
+		var service = new MoneyTransferService();
+        Injections.injeect(service, accountRepository, transactionRepository);
+
+		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+
+		logger.info("Money Transfered: {}", transaction);
+	}
+}
+```
+##### Listing 20: Interface injection based runner
 
 
+The `Injections` class ([Listing 21](#listing21) is a simple helper that will check if a bean implements a certain interface and inject the desired beans accordingly. Any class implementing one of these interfaces can use this method to get the dependencies injected.
 
+<a id="listing21"></a>
 
+```java
+public abstract class Injections {
+
+    private Injections() {}
+    
+    public static void inject(Object bean, AccountRepository accountRepository, TransactionRepository transactionRepository) {
+        if (bean instanceof AccountRepositoryAware) {
+            ((AccountRepositoryAware) bean).setAccountRepository(accountRepository);
+        }
+
+        if (bean instanceof TransactionRepositoryAware) {
+            ((TransactionRepositoryAware) bean).setTransactionRepository(transactionRepository);
+        }
+    }
+}
+```
+##### Listing 21: Helper class to do dependency injection
+
+The test case can also use the `Injections` class to inject the mocks into the `MoneyTransferService` (see [Listing 22](#listing22)). 
+
+<a id="listing22"></a>
+
+```java
+class MoneyTransferServiceTest {
+
+    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+    private final MoneyTransferService service = new MoneyTransferService();
+
+    @BeforeEach
+    public void setup() {
+        Injections.inject(service, mockAccountRepository, mockTransactionRepository);
+    }
+
+    @Test
+    @DisplayName("Money Transfer - Setter Injection")
+    public void transferMoney() {
+        // Given
+        var act1 = new Account("123456");
+        act1.debit(BigDecimal.valueOf(1000L));
+        when(mockAccountRepository.find("123456")).thenReturn(act1);
+        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+        //When
+        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+        //Then
+        assertNotNull(transaction);
+        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+    }
+}
+```
+##### Listing 17: Interface injection based test case
