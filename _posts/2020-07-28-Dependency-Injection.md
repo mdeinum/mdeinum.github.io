@@ -8,6 +8,8 @@ tags:
 - configuration
 - dependency injection
 published: true
+gh-repo: mdeinum/dependency-injection
+gh-badge: star	
 ---
 
 Before diving in lets take a look at 2 definitions of dependency injection (according to Wikipedia). 
@@ -709,3 +711,5 @@ Dependency Injection can be done in different forms in your application and it d
 5. [Interface based](#interface-injection)
 
 Which one to use depends on the use case and if you are using a framework or not. However it it probably best to use [constructor-based](#constructor-injection) dependency injection. The others you might come across when using frameworks or features of JEE. 
+
+The code can be found on [GitHub](https://github.com/mdeinum/dependency-injection.git).
