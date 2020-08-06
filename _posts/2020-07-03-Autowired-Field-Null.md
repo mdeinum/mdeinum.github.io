@@ -2,7 +2,7 @@
 layout: post
 title: Why are my autowired fields null
 date: 2020-07-03
-last_modified_at: 2020-07-22
+last_modified_at: 2020-08-06
 categories:
 - Java
 - Spring
@@ -172,7 +172,7 @@ public class HelloWorldStatic {
 
 The solution, as often, depends, the most obvious one would be to remove the `static` keyword and it would work as it is now a regular field. However there might be a compeling reason to make the field `static`. If that is the case you can either use constructor, setter or method injection to set the `static` field. Although this should be considered a hack, imho, instead of a solution. 
 
-<a href="#static"></a>
+<a href="#omitted"></a>
 ## Omitted `@Autowired` on a field
 
 Using the `HelloWorldService` below as a bean in a Spring application would fail. As there is no `@Autowired` (or `@Inject` or `@Resource`) on the field, Spring doesn't know it needs to inject a dependency into the field. So the field remains `null`.
