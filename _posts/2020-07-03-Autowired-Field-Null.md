@@ -103,7 +103,7 @@ If the application starts and your field **appears** to be `null` it generally d
 4. [Using AOP and invoking a `final`, `private` or default access method](#aop)
 5. [Using XML and haven't enabled annotation processing](#xml)
 
-<a href="#static"></a>
+<a id="static"></a>
 ## Using `@Autowired` on a `static` field
 
 Using the `HelloWorldService` below as a bean in a Spring application would fail, as dependency injection on `static` fields isn't supported. 
@@ -172,7 +172,7 @@ public class HelloWorldStatic {
 
 The solution, as often, depends, the most obvious one would be to remove the `static` keyword and it would work as it is now a regular field. However there might be a compeling reason to make the field `static`. If that is the case you can either use constructor, setter or method injection to set the `static` field. Although this should be considered a hack, imho, instead of a solution. 
 
-<a href="#omitted"></a>
+<a id="omitted"></a>
 ## Omitted `@Autowired` on a field
 
 Using the `HelloWorldService` below as a bean in a Spring application would fail. As there is no `@Autowired` (or `@Inject` or `@Resource`) on the field, Spring doesn't know it needs to inject a dependency into the field. So the field remains `null`.
@@ -242,7 +242,7 @@ To fix you can add the `@Autowired` dependency to the field or even better use c
 
 
 
-<a href="#instance"></a>
+<a id="instance"></a>
 ## Instance of bean not visible to Spring
 For Spring to be able to do dependency injection it needs to know about the beans inside the `ApplicationContext`. If a bean is created outside of the context or not as bean Spring will not be able to do dependency injection. 
 
@@ -299,7 +299,7 @@ public FilterRegistrationBean myFilter() {
 
 The configuration above creates a new instance of `MyFilter` but this isn't seen as a bean. If autowiring inside `MyFilter` is needed, it needs to have a dedicated `@Bean` method or be detected through component-scanning. 
 
-<a href="#aop"></a>
+<a id="aop"></a>
 ## Using AOP and invoking a `final`, `private` or default access method
 
 When using Spring AOP this by default uses proxies and generally there are no issues with that. However there are some things to understand about proxy based AOP. Only `public` and `protected` methods can be enhanched with this type op AOP. When using `private` or default access modifiers AOP won't be applied, the same applies to `final` methods or classes when using class-based proxies (the default in Spring Boot!). 
@@ -416,7 +416,7 @@ private String index() {
 
 Currently that doesn't have to be an issue (it is with our `LoggingAspect`) but starts to be an issue when introducing things like Spring Security and the use of `@PreAuthorize`. Using `@PreAuthorize` also leads to a proxy being created for the given class, but the `private` method is now being invoked on the proxy instead of the actual object (just as with the `final` method mentioned earlier).
 
-<a href="#xml"></a>
+<a id="xml"></a>
 ## Using XML and not enable annotation processing
 This one is an oldie but still appears at times. Historically Spring uses XML files for its configuration and as of Spring 2.0  annotation based configuration was possible. However as XML was still the leading one the annotation processing had to be enabled. To enable annotation processing you need to add `<context:annotation-config />` or use `<context:component-scan />`. Without one of these annotations wouldn't be processed. 
 
