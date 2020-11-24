@@ -2,6 +2,7 @@
 layout: post
 title: "Data Objects aren't entities"
 date: 2019-02-13
+last_modified_at: 2020-11-24
 categories:
 - Java
 tags:
@@ -64,7 +65,7 @@ When using a technology like JPA the [object identity shouldn't change between s
 Use a base class that implements the `hashCode` and `equals` method, which are safe for entities. Something like [Vlad Mihalcea proposes in his blog](https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/)
 
 ```java
-@MappedSuperClass
+@MappedSuperclass
 public abstract class BaseEntity {
 
     @Id
