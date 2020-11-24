@@ -2,7 +2,7 @@
 layout: post
 title: Why are my autowired fields null
 date: 2020-07-03
-last_modified_at: 2020-08-06
+last_modified_at: 2020-10-26
 categories:
 - Java
 - Spring
@@ -300,9 +300,9 @@ public FilterRegistrationBean myFilter() {
 The configuration above creates a new instance of `MyFilter` but this isn't seen as a bean. If autowiring inside `MyFilter` is needed, it needs to have a dedicated `@Bean` method or be detected through component-scanning. 
 
 <a id="aop"></a>
-## Using AOP and invoking a `final`, `private` or default access method
+## Using a class-based proxy and invoking a `final`, `private` or default access method
 
-When using Spring AOP this by default uses proxies and generally there are no issues with that. However there are some things to understand about proxy based AOP. Only `public` and `protected` methods can be enhanched with this type op AOP. When using `private` or default access modifiers AOP won't be applied, the same applies to `final` methods or classes when using class-based proxies (the default in Spring Boot!). 
+AOP with Spring is by default applied using proxies and generally there are no issues with that. However there are some things to understand about proxy based AOP. Only `public` and `protected` methods can be enhanched with this type op AOP. When using `private` or default access modifiers AOP won't be applied, the same applies to `final` methods or classes when using class-based proxies (the default in Spring Boot!). 
 
 The aformentioned methods are an issue because when using proxy based AOP, spring will create an additional instance of the class which acts like, in this case, the `HelloWorldService`. This additional instance wraps the actual instance. When invoking a method on the class it will first call the different aspects, before passing it on to the actual instance. However as there is no way to proxy a `final`, `private` or default access method the method is called on the created proxy. This proxy class will not have the dependencies injected (as it doesn't need it).
 
@@ -403,18 +403,11 @@ Again this will through a `NullPointerException` due to being unable to proxy th
 
 The solution in this case is to remove the `final` modifier and it will run. Sometimes that might not be an option, introducing an interface and enable interface based proxies is another solution. 
 
-The `private` and default access modifier is sometimes seen in `@Controller`/`@RestController` classes and looks something like this. 
+=== Common "mistakes"
 
-```java
-package biz.deinum.blog.autowiring.aop;
+1. Using a `private` method in an `@(Rest)Controller` and the use of the Spring Security `@PreAuthorize`
+2. Using `@Lazy` on a type or `@Autowired` field
 
-@RequestMapping
-private String index() {
-    return "index";
-}
-```
-
-Currently that doesn't have to be an issue (it is with our `LoggingAspect`) but starts to be an issue when introducing things like Spring Security and the use of `@PreAuthorize`. Using `@PreAuthorize` also leads to a proxy being created for the given class, but the `private` method is now being invoked on the proxy instead of the actual object (just as with the `final` method mentioned earlier).
 
 <a id="xml"></a>
 ## Using XML and not enable annotation processing
