@@ -2,7 +2,7 @@
 layout: post
 title: Why are my autowired fields null
 date: 2020-07-03
-last_modified_at: 2020-12-01
+last-updated: 2020-12-01
 categories:
 - Java
 - Spring

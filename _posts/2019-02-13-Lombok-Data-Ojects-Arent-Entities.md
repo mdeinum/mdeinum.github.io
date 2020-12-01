@@ -2,7 +2,7 @@
 layout: post
 title: "Data Objects aren't entities"
 date: 2019-02-13
-last_modified_at: 2020-11-24
+last-updated: 2020-11-24
 categories:
 - Java
 tags:
