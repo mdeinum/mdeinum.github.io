@@ -2,7 +2,7 @@
 layout: post
 title: Why are my autowired fields null
 date: 2020-07-03
-last_modified_at: 2020-10-26
+last_modified_at: 2020-12-01
 categories:
 - Java
 - Spring
@@ -170,7 +170,7 @@ public class HelloWorldStatic {
 }
 ```
 
-The solution, as often, depends, the most obvious one would be to remove the `static` keyword and it would work as it is now a regular field. However there might be a compeling reason to make the field `static`. If that is the case you can either use constructor, setter or method injection to set the `static` field. Although this should be considered a hack, imho, instead of a solution. 
+The solution, as often, depends, the most obvious one would be to remove the `static` keyword and it would work as it is now a regular field. However there might be a compeling reason to make the field `static`. If that is the case you can either use [constructor](https://deinum.biz/2020-07-28-Dependency-Injection/#constructor-injection), [setter](https://deinum.biz/2020-07-28-Dependency-Injection/#setter-injection) or [method](https://deinum.biz/2020-07-28-Dependency-Injection/#method-injection) injection to set the `static` field. Although this should be considered a hack, imho, instead of a solution. 
 
 <a id="omitted"></a>
 ## Omitted `@Autowired` on a field
