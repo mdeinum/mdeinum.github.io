@@ -2,7 +2,7 @@
 layout: post
 title: "Data Objects aren't entities"
 date: 2019-02-13
-last-updated: 2020-11-24
+last-updated: 2021-01-13
 categories:
 - Java
 tags:
@@ -74,15 +74,20 @@ public abstract class BaseEntity {
 
     @Override
     public boolean equals(Object o) {
+        if (o == null) return false;
         if (this == o) return true;
-        if (!(o instanceof getClass())) return false;
+
+		if (!Objects.equals(getClass(), o.getClass())) {
+			return false;
+		}
+
         BaseEntity that = (BaseEntity) o;
         return this.id != null && Objects.equals(this.id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return 31;
+        return getClass().hashCode();
     }}
 }
 ```
