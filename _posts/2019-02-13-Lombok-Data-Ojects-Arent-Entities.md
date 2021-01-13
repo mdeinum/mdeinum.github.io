@@ -77,9 +77,9 @@ public abstract class BaseEntity {
         if (o == null) return false;
         if (this == o) return true;
 
-		if (!Objects.equals(getClass(), o.getClass())) {
-			return false;
-		}
+        if (!Objects.equals(getClass(), o.getClass())) {
+            return false;
+        }
 
         BaseEntity that = (BaseEntity) o;
         return this.id != null && Objects.equals(this.id, that.id);
@@ -88,7 +88,7 @@ public abstract class BaseEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }}
+    }
 }
 ```
 Now when `Book` extends the `BaseEntity`, Lombok needs to know if it needs to generate an `equals` and `hashCode` method. As it should backoff adding `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` to the `Book` and `Author` entity will (kind of) disable the `equals` and `hashCode` generation.
