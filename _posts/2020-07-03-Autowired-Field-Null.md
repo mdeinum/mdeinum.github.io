@@ -95,7 +95,7 @@ Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No q
 	... 14 more
 ```
 
-If the application starts and your field **appears** to be `null` it generally due to on of the following issues:
+If the application starts and your field **appears** to be `null` it is generally due to one of the following issues:
 
 1. [Using `@Autowired` on a `static` field](#static)
 2. [Omitted `@Autowired` on a field](#omitted)
