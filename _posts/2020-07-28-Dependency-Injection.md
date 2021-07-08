@@ -12,7 +12,7 @@ gh-repo: mdeinum/dependency-injection
 gh-badge: star	
 ---
 
-Before diving in lets take a look at 2 definitions of dependency injection (according to Wikipedia). 
+Before diving in let's take a look at two definitions of dependency injection (according to Wikipedia). 
 
 > **Dependency Injection** is a technique in which an object receives other objects that it depends on. These other objects are called dependencies. 
 > -- <cite><a href="https://en.wikipedia.org/wiki/Dependency_injection">Wikipedia</a></cite>
@@ -31,7 +31,7 @@ There is the `MoneyTransferService` (see [Listing 1](#listing1)) which has a sin
 ```java
 public interface MoneyTransferService {
 
-	Transaction transfer(String source, String target, BigDecimal amount);
+ Transaction transfer(String source, String target, BigDecimal amount);
 }
 ```
 ##### Listing 1: MoneyTransferService interface
@@ -41,21 +41,21 @@ public interface MoneyTransferService {
 ```java
 public abstract class AbstractMoneyTransferService implements MoneyTransferService {
 
-	@Override
-	public Transaction transfer(String source, String target, BigDecimal amount) {
-		var src = getAccountRepository().find(source);
-		var dst = getAccountRepository().find(target);
+  @Override
+  public Transaction transfer(String source, String target, BigDecimal amount) {
+    var src = getAccountRepository().find(source);
+    var dst = getAccountRepository().find(target);
 
-		src.credit(amount);
-		dst.debit(amount);
+    src.credit(amount);
+    dst.debit(amount);
 
-		var transaction = new MoneyTransferTransaction(src, dst, amount);
-		return getTransactionRepository().store(transaction);
-	}
+    var transaction = new MoneyTransferTransaction(src, dst, amount);
+    return getTransactionRepository().store(transaction);
+  }
 
-	protected abstract AccountRepository getAccountRepository();
+  protected abstract AccountRepository getAccountRepository();
 
-	protected abstract TransactionRepository getTransactionRepository();
+  protected abstract TransactionRepository getTransactionRepository();
 }
 ```
 ##### Listing 2: Abstract class implementing the business logic
@@ -69,25 +69,25 @@ Now we need a class that provides the needed `AccountRepository` and `Transactio
 ```java
 public class SimpleMoneyTransferService extends AbstractMoneyTransferService {
 
-	private final AccountRepository accountRepository;
-	private final TransactionRepository transactionRepository;
+  private final AccountRepository accountRepository;
+  private final TransactionRepository transactionRepository;
 
-	public SimpleMoneyTransferServiceImpl() {
-		super();
-		this.accountRepository = new MapBasedAccountRepository() {{initialize();}};
-		this.transactionRepository = new MapBasedTransactionRepository();
+  public SimpleMoneyTransferServiceImpl() {
+    super();
+    this.accountRepository = new MapBasedAccountRepository() {{initialize();}};
+    this.transactionRepository = new MapBasedTransactionRepository();
 
-	}
+  }
 
-    @Override
-	protected AccountRepository getAccountRepository() {
-		return this.accountRepository;
-	}
+  @Override
+  protected AccountRepository getAccountRepository() {
+    return this.accountRepository;
+  }
 
-	@Override
-	protected TransactionRepository getTransactionRepository() {
-		return this.transactionRepository;
-	}
+  @Override
+  protected TransactionRepository getTransactionRepository() {
+    return this.transactionRepository;
+  }
 }
 ```
 ##### Listing 3: Simple no dependency injection based implementation
@@ -99,14 +99,14 @@ To make a money transfer the class as shown in [Listing 4](#listing4) can be use
 ```java
 public class TransferMoney {
 
-	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
 
-		var service = new SimpleMoneyTransferService();
-		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
-		logger.info("Money Transfered: {}", transaction);
-	}
+    var service = new SimpleMoneyTransferService();
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    logger.info("Money Transfered: {}", transaction);
+  }
 }
 ```
 ##### Listing 4: No dependency injection based runner
@@ -136,18 +136,18 @@ Field injection is the practice of defining a field and with reflection setting 
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
-	private AccountRepository accountRepository;
-	private TransactionRepository transactionRepository;
+  private AccountRepository accountRepository;
+  private TransactionRepository transactionRepository;
 
-	@Override
-	protected AccountRepository getAccountRepository() {
-		return this.accountRepository;
-	}
+  @Override
+  protected AccountRepository getAccountRepository() {
+    return this.accountRepository;
+  }
 
-	@Override
-	protected TransactionRepository getTransactionRepository() {
-		return this.transactionRepository;
-	}
+  @Override
+  protected TransactionRepository getTransactionRepository() {
+    return this.transactionRepository;
+  }
 
 }
 ```
@@ -160,55 +160,55 @@ Now as the `MoneyTransferService` itself doesn't control those dependencies they
 ```java
 public class ReflectionUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(ReflectionUtil.class);
+  private static final Logger log = LoggerFactory.getLogger(ReflectionUtil.class);
 
-    public static void setFieldsByName(Object target, Map<String, Object> context) {
-        Field[] fields = target.getClass().getDeclaredFields();
-        Stream.of(fields)
-                .filter(it -> Objects.isNull(getField(it, target)))
-                .forEach(it -> {
-                    String name = it.getName();
-                    Object value = context.get(name);
-                    if (value == null || !it.getType().isAssignableFrom(value.getClass())) {
-                        String msg = String.format("Cannot inject '%s' into field '%s' of '%s'", value, name, target.getClass());
-                        throw new IllegalStateException(msg);
-                    } else {
-                        setField(it, target, value);
-                    }
-                });
-    }
-
-    public static void setFieldsByType(Object target, Map<String, Object> context) {
-        Field[] fields = target.getClass().getDeclaredFields();
-        for (Object value : context.values()) {
-            Stream.of(fields)
-                    .filter(it -> it.getType().isAssignableFrom(value.getClass()))
-                    .filter(it -> Objects.isNull(getField(it, target)))
-                    .forEach(it -> setField(it, target, value));
+  public static void setFieldsByName(Object target, Map<String, Object> context) {
+    Field[] fields = target.getClass().getDeclaredFields();
+    Stream.of(fields)
+      .filter(it -> Objects.isNull(getField(it, target)))
+      .forEach(it -> {
+        String name = it.getName();
+        Object value = context.get(name);
+        if (value == null || !it.getType().isAssignableFrom(value.getClass())) {
+          String msg = String.format("Cannot inject '%s' into field '%s' of '%s'", value, name, target.getClass());
+          throw new IllegalStateException(msg);
+        } else {
+          setField(it, target, value);
         }
+      });
     }
 
-    private static Object getField(Field field, Object target) {
-        field.setAccessible(true);
-        try {
-            log.info("Getting field '{}' of '{}' '", field.getName(), target);
-            return field.get(target);
-        } catch (IllegalAccessException e) {
-            var msg = String.format("Cannot get field: %s of: %s", field, target.getClass());
-            throw new IllegalStateException(msg, e);
-        }
+  public static void setFieldsByType(Object target, Map<String, Object> context) {
+    Field[] fields = target.getClass().getDeclaredFields();
+    for (Object value : context.values()) {
+      Stream.of(fields)
+        .filter(it -> it.getType().isAssignableFrom(value.getClass()))
+        .filter(it -> Objects.isNull(getField(it, target)))
+        .forEach(it -> setField(it, target, value));
     }
+  }
 
-    private static void setField(Field field, Object target, Object value) {
-        field.setAccessible(true);
-        try {
-            log.info("Setting field '{}' of '{}' to '{}'", field.getName(), target, value);
-            field.set(target, value);
-        } catch (IllegalAccessException e) {
-            var msg = String.format("Cannot set field: %s with value: %s", field, value);
-            throw new IllegalStateException(msg, e);
-        }
+  private static Object getField(Field field, Object target) {
+    field.setAccessible(true);
+    try {
+      log.info("Getting field '{}' of '{}' '", field.getName(), target);
+      return field.get(target);
+    } catch (IllegalAccessException e) {
+      var msg = String.format("Cannot get field: %s of: %s", field, target.getClass());
+      throw new IllegalStateException(msg, e);
     }
+  }
+
+  private static void setField(Field field, Object target, Object value) {
+    field.setAccessible(true);
+    try {
+      log.info("Setting field '{}' of '{}' to '{}'", field.getName(), target, value);
+      field.set(target, value);
+    } catch (IllegalAccessException e) {
+      var msg = String.format("Cannot set field: %s with value: %s", field, value);
+      throw new IllegalStateException(msg, e);
+    }
+  }
 }
 ```
 ##### Listing 6: Field Injection Helper Class
@@ -224,27 +224,25 @@ The runner, as shown in [Listing 7](#listing7) can be used to do a money transfe
 ```java
 public class TransferMoney {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
 
-    public static void main(String[] args) {
-        var accountRepository = new MapBasedAccountRepository();
-        accountRepository.initialize();
+  public static void main(String[] args) {
+    var accountRepository = new MapBasedAccountRepository();
+    accountRepository.initialize();
 
-        var transactionRepository = new MapBasedTransactionRepository();
-        var service = new MoneyTransferService();
+    var transactionRepository = new MapBasedTransactionRepository();
+    var service = new MoneyTransferService();
 
-
-        var context = Map.of(
-                "accountRepository", accountRepository,
-                "transactionRepository", transactionRepository);
-        setFieldsByName(service, context);
+    var context = Map.of(
+      "accountRepository", accountRepository,
+      "transactionRepository", transactionRepository);
+    setFieldsByName(service, context);
 //        setFieldsByType(service, context);
 
-        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
 
-        logger.info("Money Transfered: {}", transaction);
-
-    }
+    logger.info("Money Transfered: {}", transaction);
+  }
 }
 ```
 ##### Listing 7: Field injection based runner
@@ -258,32 +256,32 @@ The advantage is that the `MoneyTransferService` now doesn't need to know what t
 ```java
 class MoneyTransferServiceTest {
 
-    private final MoneyTransferService service = new MoneyTransferService();
-    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
-    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+  private final MoneyTransferService service = new MoneyTransferService();
+  private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+  private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
 
-    @BeforeEach
-    public void setup() {
-        Map<String, Object> context = Map.of(
-                "accountRepository", mockAccountRepository,
-                "transactionRepository", mockTransactionRepository);
+  @BeforeEach
+  public void setup() {
+    Map<String, Object> context = Map.of(
+        "accountRepository", mockAccountRepository,
+        "transactionRepository", mockTransactionRepository);
 
-        ReflectionUtil.setFieldsByName(service, context);
-    }
+    ReflectionUtil.setFieldsByName(service, context);
+  }
 
-    @Test
-    public void transferMoney() {
-        // Given
-        var act1 = new Account("123456");
-        act1.debit(BigDecimal.valueOf(1000L));
-        when(mockAccountRepository.find("123456")).thenReturn(act1);
-        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
-        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
-        //When
-        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
-        //Then
-        assertNotNull(transaction);
-        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+  @Test
+  public void transferMoney() {
+    // Given
+    var act1 = new Account("123456");
+    act1.debit(BigDecimal.valueOf(1000L));
+    when(mockAccountRepository.find("123456")).thenReturn(act1);
+    when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+    when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+    //When
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    //Then
+    assertNotNull(transaction);
+    verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
     }
 }
 ```
@@ -299,24 +297,24 @@ Constructor based injection is creating a constructor that accepts the dependenc
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
-	private final AccountRepository accountRepository;
-	private final TransactionRepository transactionRepository;
+  private final AccountRepository accountRepository;
+  private final TransactionRepository transactionRepository;
 
-	public MoneyTransferService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-		super();
-		this.accountRepository = accountRepository;
-		this.transactionRepository = transactionRepository;
-	}
+  public MoneyTransferService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    super();
+    this.accountRepository = accountRepository;
+    this.transactionRepository = transactionRepository;
+  }
 
-	@Override
-	protected AccountRepository getAccountRepository() {
-		return this.accountRepository;
-	}
+  @Override
+  protected AccountRepository getAccountRepository() {
+    return this.accountRepository;
+  }
 
-	@Override
-	protected TransactionRepository getTransactionRepository() {
-		return this.transactionRepository;
-	}
+  @Override
+  protected TransactionRepository getTransactionRepository() {
+    return this.transactionRepository;
+  }
 }
 ```
 ##### Listing 9: Construction injection based `MoneyTransferService`
@@ -328,20 +326,20 @@ To make a money transfer, the repositories need to be constructed before the ser
 ```java
 public class TransferMoney {
 
-	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
 
-	public static void main(String[] args) {
-		var transactionRepository = new MapBasedTransactionRepository();
+  public static void main(String[] args) {
+    var transactionRepository = new MapBasedTransactionRepository();
 
-		var accountRepository = new MapBasedAccountRepository();
-		accountRepository.initialize();
+    var accountRepository = new MapBasedAccountRepository();
+    accountRepository.initialize();
 
-		var service = new MoneyTransferService(accountRepository, transactionRepository);
+    var service = new MoneyTransferService(accountRepository, transactionRepository);
 
-		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
 
-		logger.info("Money Transfered: {}", transaction);
-	}
+    logger.info("Money Transfered: {}", transaction);
+  }
 }
 ```
 ##### Listing 10: Construction injection based runner
@@ -355,24 +353,24 @@ The same modification can be done for the test case (see [Listing 11](#listing11
 ```java
 class MoneyTransferServiceTest {
 
-    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
-    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
-    private final MoneyTransferService service = new MoneyTransferService(mockAccountRepository, mockTransactionRepository);
+  private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+  private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+  private final MoneyTransferService service = new MoneyTransferService(mockAccountRepository, mockTransactionRepository);
 
-    @Test
-    public void transferMoney() {
-        // Given
-        Account act1 = new Account("123456");
-        act1.debit(BigDecimal.valueOf(1000L));
-        when(mockAccountRepository.find("123456")).thenReturn(act1);
-        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
-        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
-        //When
-        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
-        //Then
-        assertNotNull(transaction);
-        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
-    }
+  @Test
+  public void transferMoney() {
+    // Given
+    Account act1 = new Account("123456");
+    act1.debit(BigDecimal.valueOf(1000L));
+    when(mockAccountRepository.find("123456")).thenReturn(act1);
+    when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+    when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+    //When
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    //Then
+    assertNotNull(transaction);
+    verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+  }
 }
 ```
 ##### Listing 11: Construction injection based test case
@@ -387,26 +385,26 @@ A class has so-called setter methods to set the dependencies needed for an objec
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
-	private AccountRepository accountRepository;
-	private TransactionRepository transactionRepository;
+  private AccountRepository accountRepository;
+  private TransactionRepository transactionRepository;
 
-	@Override
-	protected AccountRepository getAccountRepository() {
-		return this.accountRepository;
-	}
+  @Override
+  protected AccountRepository getAccountRepository() {
+    return this.accountRepository;
+  }
 
-	@Override
-	protected TransactionRepository getTransactionRepository() {
-		return this.transactionRepository;
-	}
+  @Override
+  protected TransactionRepository getTransactionRepository() {
+    return this.transactionRepository;
+  }
 
-	public void setAccountRepository(AccountRepository accountRepository) {
-		this.accountRepository = accountRepository;
-	}
+  public void setAccountRepository(AccountRepository accountRepository) {
+    this.accountRepository = accountRepository;
+  }
 
-	public void setTransactionRepository(TransactionRepository transactionRepository) {
-		this.transactionRepository = transactionRepository;
-	}
+  public void setTransactionRepository(TransactionRepository transactionRepository) {
+    this.transactionRepository = transactionRepository;
+  }
 
 }
 
@@ -418,22 +416,22 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 ```java
 public class TransferMoney {
 
-	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
 
-	public static void main(String[] args) {
-		var transactionRepository = new MapBasedTransactionRepository();
+  public static void main(String[] args) {
+    var transactionRepository = new MapBasedTransactionRepository();
 
-		var accountRepository = new MapBasedAccountRepository();
-		accountRepository.initialize();
+    var accountRepository = new MapBasedAccountRepository();
+    accountRepository.initialize();
 
-		var service = new MoneyTransferService();
-		service.setAccountRepository(accountRepository); // Inject dependency
-		service.setTransactionRepository(transactionRepository); // Inject dependency
+    var service = new MoneyTransferService();
+    service.setAccountRepository(accountRepository); // Inject dependency
+    service.setTransactionRepository(transactionRepository); // Inject dependency
 
-		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
 
-		logger.info("Money Transfered: {}", transaction);
-	}
+    logger.info("Money Transfered: {}", transaction);
+  }
 }
 ```
 ##### Listing 13: Setter injection based runner
@@ -445,30 +443,30 @@ The test case can be modified as well (see [Listing 14](#listing14))
 ```java
 class MoneyTransferServiceTest {
 
-    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
-    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
-    private final MoneyTransferService service = new MoneyTransferService();
+  private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+  private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+  private final MoneyTransferService service = new MoneyTransferService();
 
-    @BeforeEach
-    public void setup() {
-        service.setAccountRepository(this.mockAccountRepository);
-        service.setTransactionRepository(this.mockTransactionRepository); 
-    }
+  @BeforeEach
+  public void setup() {
+    service.setAccountRepository(this.mockAccountRepository);
+    service.setTransactionRepository(this.mockTransactionRepository); 
+  }
 
-    @Test
-    public void transferMoney() {
-        // Given
-        Account act1 = new Account("123456");
-        act1.debit(BigDecimal.valueOf(1000L));
-        when(mockAccountRepository.find("123456")).thenReturn(act1);
-        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
-        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
-        //When
-        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
-        //Then
-        assertNotNull(transaction);
-        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
-    }
+  @Test
+  public void transferMoney() {
+    // Given
+    Account act1 = new Account("123456");
+    act1.debit(BigDecimal.valueOf(1000L));
+    when(mockAccountRepository.find("123456")).thenReturn(act1);
+    when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+    when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+    //When
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    //Then
+    assertNotNull(transaction);
+    verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+}
 }
 ```
 ##### Listing 14: Setter injection based test case
@@ -484,23 +482,23 @@ Method injection is similar to setter injection in that a method is being used t
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService {
 
-	private AccountRepository accountRepository;
-	private TransactionRepository transactionRepository;
+  private AccountRepository accountRepository;
+  private TransactionRepository transactionRepository;
 
-	@Override
-	protected AccountRepository getAccountRepository() {
-		return this.accountRepository;
-	}
+  @Override
+  protected AccountRepository getAccountRepository() {
+    return this.accountRepository;
+  }
 
-	@Override
-	protected TransactionRepository getTransactionRepository() {
-		return this.transactionRepository;
-	}
+  @Override
+  protected TransactionRepository getTransactionRepository() {
+    return this.transactionRepository;
+  }
 
-	public void initialize(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-		this.accountRepository=accountRepository;
-		this.transactionRepository=transactionRepository;
-	}
+  public void initialize(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    this.accountRepository=accountRepository;
+    this.transactionRepository=transactionRepository;
+  }
 }
 ```
 ##### Listing 15: Method injection based `MoneyTransferService`
@@ -510,21 +508,21 @@ class MoneyTransferService extends AbstractMoneyTransferService {
 ```java
 public class TransferMoney {
 
-	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
 
-	public static void main(String[] args) {
-		var transactionRepository = new MapBasedTransactionRepository();
+  public static void main(String[] args) {
+    var transactionRepository = new MapBasedTransactionRepository();
 
-		var accountRepository = new MapBasedAccountRepository();
-		accountRepository.initialize();
+    var accountRepository = new MapBasedAccountRepository();
+    accountRepository.initialize();
 
-		var service = new MoneyTransferService();
-		service.initialize(accountRepository,transactionRepository); // Inject dependencies
+    var service = new MoneyTransferService();
+    service.initialize(accountRepository,transactionRepository); // Inject dependencies
 
-		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
 
-		logger.info("Money Transfered: {}", transaction);
-	}
+    logger.info("Money Transfered: {}", transaction);
+  }
 }
 ```
 ##### Listing 16: Method injection based runner
@@ -536,29 +534,29 @@ To be able to run the test case the `initialize` method would need to be called 
 ```java
 class MoneyTransferServiceTest {
 
-    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
-    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
-    private final MoneyTransferService service = new MoneyTransferService();
+  private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+  private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+  private final MoneyTransferService service = new MoneyTransferService();
 
-    @BeforeEach
-    public void setup() {
-        service.initialize(this.mockAccountRepository, this.mockTransactionRepository);
-    }
+  @BeforeEach
+  public void setup() {
+    service.initialize(this.mockAccountRepository, this.mockTransactionRepository);
+  }
 
-    @Test
-    public void transferMoney() {
-        // Given
-        Account act1 = new Account("123456");
-        act1.debit(BigDecimal.valueOf(1000L));
-        when(mockAccountRepository.find("123456")).thenReturn(act1);
-        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
-        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
-        //When
-        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
-        //Then
-        assertNotNull(transaction);
-        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
-    }
+  @Test
+  public void transferMoney() {
+    // Given
+    Account act1 = new Account("123456");
+    act1.debit(BigDecimal.valueOf(1000L));
+    when(mockAccountRepository.find("123456")).thenReturn(act1);
+    when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+    when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+    //When
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    //Then
+    assertNotNull(transaction);
+    verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+  }
 }
 ```
 ##### Listing 17: Method injection based test case
@@ -573,12 +571,12 @@ Interface-based injection is based on interface and that the program knows what 
 ```java
 public interface AccountRepositoryAware {
 
-    void setAccountRepository(AccountRepository repo);
+  void setAccountRepository(AccountRepository repo);
 }
 
 public interface TransactionRepositoryAware {
 
-    void setTransactionRepository(TransactionRepository repo);
+  void setTransactionRepository(TransactionRepository repo);
 }
 ```
 
@@ -591,28 +589,28 @@ As can be seen in Listing 18, 2 interfaces define how to inject a certain depend
 ```java
 class MoneyTransferService extends AbstractMoneyTransferService implements AccountRepositoryAware, TransactionRepositoryAware  {
 
-	private AccountRepository accountRepository;
-	private TransactionRepository transactionRepository;
+  private AccountRepository accountRepository;
+  private TransactionRepository transactionRepository;
 
-	@Override
-	protected AccountRepository getAccountRepository() {
-		return this.accountRepository;
-	}
+  @Override
+  protected AccountRepository getAccountRepository() {
+    return this.accountRepository;
+  }
 
-	@Override
-	protected TransactionRepository getTransactionRepository() {
-		return this.transactionRepository;
-	}
+  @Override
+  protected TransactionRepository getTransactionRepository() {
+    return this.transactionRepository;
+  }
 
-	@Override
-	public void setAccountRepository(AccountRepository accountRepository) {
-		this.accountRepository = accountRepository;
-	}
+  @Override
+  public void setAccountRepository(AccountRepository accountRepository) {
+    this.accountRepository = accountRepository;
+  }
 
-	@Override
-	public void setTransactionRepository(TransactionRepository transactionRepository) {
-		this.transactionRepository = transactionRepository;
-	}
+  @Override
+  public void setTransactionRepository(TransactionRepository transactionRepository) {
+    this.transactionRepository = transactionRepository;
+  }
 }
 ```
 ##### Listing 19: Interface injection based `MoneyTransferService`
@@ -623,21 +621,21 @@ The `MoneyTransferService` now implements the 2 interfaces and when we want to i
 ```java
 public class TransferMoney {
 
-	private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransferMoney.class);
 
-	public static void main(String[] args) {
-		var transactionRepository = new MapBasedTransactionRepository();
+  public static void main(String[] args) {
+    var transactionRepository = new MapBasedTransactionRepository();
 
-		var accountRepository = new MapBasedAccountRepository();
-		accountRepository.initialize();
+    var accountRepository = new MapBasedAccountRepository();
+    accountRepository.initialize();
 
-		var service = new MoneyTransferService();
-        Injections.injeect(service, accountRepository, transactionRepository);
+    var service = new MoneyTransferService();
+    Injections.inject(service, accountRepository, transactionRepository);
 
-		var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
 
-		logger.info("Money Transfered: {}", transaction);
-	}
+    logger.info("Money Transfered: {}", transaction);
+  }
 }
 ```
 ##### Listing 20: Interface injection based runner
@@ -650,17 +648,17 @@ The `Injections` class ([Listing 21](#listing21) is a simple helper that will ch
 ```java
 public abstract class Injections {
 
-    private Injections() {}
+  private Injections() {}
     
-    public static void inject(Object bean, AccountRepository accountRepository, TransactionRepository transactionRepository) {
-        if (bean instanceof AccountRepositoryAware) {
-            ((AccountRepositoryAware) bean).setAccountRepository(accountRepository);
-        }
-
-        if (bean instanceof TransactionRepositoryAware) {
-            ((TransactionRepositoryAware) bean).setTransactionRepository(transactionRepository);
-        }
+  public static void inject(Object bean, AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    if (bean instanceof AccountRepositoryAware) {
+        ((AccountRepositoryAware) bean).setAccountRepository(accountRepository);
     }
+
+    if (bean instanceof TransactionRepositoryAware) {
+        ((TransactionRepositoryAware) bean).setTransactionRepository(transactionRepository);
+    }
+  }
 }
 ```
 ##### Listing 21: Helper class to do dependency injection
@@ -672,30 +670,30 @@ The test case can also use the `Injections` class to inject the mocks into the `
 ```java
 class MoneyTransferServiceTest {
 
-    private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
-    private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
-    private final MoneyTransferService service = new MoneyTransferService();
+  private final AccountRepository mockAccountRepository = Mockito.mock(AccountRepository.class);
+  private final TransactionRepository mockTransactionRepository = Mockito.mock(TransactionRepository.class);
+  private final MoneyTransferService service = new MoneyTransferService();
 
-    @BeforeEach
-    public void setup() {
-        Injections.inject(service, mockAccountRepository, mockTransactionRepository);
-    }
+  @BeforeEach
+  public void setup() {
+    Injections.inject(service, mockAccountRepository, mockTransactionRepository);
+  }
 
-    @Test
-    @DisplayName("Money Transfer - Setter Injection")
-    public void transferMoney() {
-        // Given
-        var act1 = new Account("123456");
-        act1.debit(BigDecimal.valueOf(1000L));
-        when(mockAccountRepository.find("123456")).thenReturn(act1);
-        when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
-        when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
-        //When
-        var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
-        //Then
-        assertNotNull(transaction);
-        verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
-    }
+  @Test
+  @DisplayName("Money Transfer - Setter Injection")
+  public void transferMoney() {
+    // Given
+    var act1 = new Account("123456");
+    act1.debit(BigDecimal.valueOf(1000L));
+    when(mockAccountRepository.find("123456")).thenReturn(act1);
+    when(mockAccountRepository.find("654321")).thenReturn(new Account("654321"));
+    when(mockTransactionRepository.store(isA(MoneyTransferTransaction.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+    //When
+    var transaction = service.transfer("123456", "654321", new BigDecimal("250.00"));
+    //Then
+    assertNotNull(transaction);
+    verify(mockTransactionRepository, times(1)).store(isA(MoneyTransferTransaction.class));
+  }
 }
 ```
 ##### Listing 17: Interface injection based test case
