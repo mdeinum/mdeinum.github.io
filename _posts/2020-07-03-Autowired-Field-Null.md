@@ -287,7 +287,7 @@ public class HelloWorldNewInstance {
 }
 ```
 
-Will also result in a `NullPointerException`. This small sample is propably quite obvious as the new instance is created outside of the Spring `ApplicationContext`. Here you actually have 2 instances of the `HelloWorldService`, 1 inside the `ApplicationContext` and the one freshly constructed. Sometimes it might be more subtle and the bean creation happens inside an `@Bean` method in an `@Configuration` class. Like as part of tcreating a `FilterRegistrationBean` in Spring Boot or a configuration enhancement in Spring Security. 
+Will also result in a `NullPointerException`. This small sample is propably quite obvious as the new instance is created outside of the Spring `ApplicationContext`. Here you actually have 2 instances of the `HelloWorldService`, 1 inside the `ApplicationContext` and the one freshly constructed. Sometimes it might be more subtle and the bean creation happens inside an `@Bean` method in an `@Configuration` class. Like as part of creating a `FilterRegistrationBean` in Spring Boot or a configuration enhancement in Spring Security. 
 
 ```java
 @Bean
