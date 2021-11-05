@@ -187,7 +187,7 @@ The AspectJ expression must be given in the `pattern` attribute. The expression 
 
 One drawback with this approach is that one needs AspectJ on the classpath to parse the expressions, now in most Spring Boot applications this isn't an issue, however it might be something to think about. 
 
-## Use 'REGEX`
+## Use `REGEX`
 As with the previous expression based one one can also use a Regular Expression to detect classes. Now this will only work with matches based on name, not as with the AspectJ one with types. 
 
 ```java
