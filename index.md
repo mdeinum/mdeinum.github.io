@@ -27,7 +27,7 @@ show-avatar: false
     <div class="project-card">
       {%- assign gh-user = "mdeinum"-%}
       {%- assign gh-project = "spring-batch-excel" -%}
-      <a target="_blank" href="https://github.com/{{- gh-user -}}/{{- gh-project -}}" class="project-link" title="Go to Github Poject Page">
+      <a target="_blank" href="https://github.com/spring-projects/spring-batch-extensions" class="project-link" title="Go to Github Poject Page">
         <span class="fa-stack fa-4x">
           <i class="fa fa-square fa-stack-2x stack-color"></i>
           <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
@@ -36,8 +36,8 @@ show-avatar: false
         <hr class="seperator">
         <p class="text-muted">Spring Batch extension which contains an <code>ItemReader</code> implementation for Excel based on Apache POI.</p>
         <hr class="seperator">
-        <img src="https://img.shields.io/github/forks/{{- gh-user -}}/{{- gh-project -}}.svg?style=social&label=Fork" alt="Github" title="Github Forks">
-        <img src="https://img.shields.io/github/stars/{{- gh-user -}}/{{- gh-project -}}.svg?style=social&label=Stars" alt="Github" title="Github Stars">
+        <img src="https://img.shields.io/github/forks/spring-projects/spring-batch-extensions.svg?style=social&label=Fork" alt="Github" title="Github Forks">
+        <img src="https://img.shields.io/github/stars/spring-projects/spring-batch-extensions.svg?style=social&label=Stars" alt="Github" title="Github Stars">
       </a>
     </div>
   </div>
@@ -51,7 +51,7 @@ show-avatar: false
         </span>
         <h4>{{- gh-project -}}</h4>
         <hr class="seperator">
-        <p class="text-muted">Utility classes collected and created over the years. Some of these might be useful to others</p>
+        <p class="text-muted">Utility and helper classes collected and created over the years. Some of these might be useful to others</p>
         <hr class="seperator">
         <img src="https://img.shields.io/github/forks/{{- gh-user -}}/{{- gh-project -}}.svg?style=social&label=Fork" alt="Github" title="Github Forks">
         <img src="https://img.shields.io/github/stars/{{- gh-user -}}/{{- gh-project -}}.svg?style=social&label=Stars" alt="Github" title="Github Stars">
