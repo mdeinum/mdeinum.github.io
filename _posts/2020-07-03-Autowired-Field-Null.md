@@ -404,7 +404,7 @@ Again this will through a `NullPointerException` due to being unable to proxy th
 
 The solution in this case is to remove the `final` modifier and it will run. Sometimes that might not be an option, introducing an interface and enable interface based proxies is another solution. 
 
-=== Common "mistakes"
+### Common "mistakes"
 
 1. Using a `private` method in an `@(Rest)Controller` and the use of the Spring Security `@PreAuthorize`
 2. Using `@Lazy` on a type or `@Autowired` field
@@ -473,7 +473,7 @@ public class HelloWorldXml {
 ```
 
 <a id="constructor"></a>
-##Using `@Autowired` fields in the constructor
+## Using `@Autowired` fields in the constructor
 
 Using the `HelloWorldService` below as a bean in a Spring application would fail. The `@Autowired` field `writer` hasn't been injected yet, as the service is still being constructed by the JVM. Spring can only inject the field after the object has been constructed. If you need the dependency in the constructor use constructor based DI instead of fields, or just always use constructor injection as that should be the preferred way of doing DI. 
 
