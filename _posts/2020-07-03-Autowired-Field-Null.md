@@ -2,7 +2,7 @@
 layout: post
 title: Why are my autowired fields null
 date: 2020-07-03
-last-updated: 2020-12-01
+last-updated: 2022-07-04
 categories:
 - Java
 - Spring
@@ -102,6 +102,7 @@ If the application starts and your field **appears** to be `null` it is generall
 3. [Instance of bean not visible to Spring](#instance)
 4. [Using AOP and invoking a `final`, `private` or default access method](#aop)
 5. [Using XML and haven't enabled annotation processing](#xml)
+6. [Using `@Autowired` fields in the constructor](#constructor)
 
 <a id="static"></a>
 ## Using `@Autowired` on a `static` field
@@ -471,6 +472,77 @@ public class HelloWorldXml {
 }
 ```
 
+<a id="constructor"></a>
+##Using `@Autowired` fields in the constructor
+
+Using the `HelloWorldService` below as a bean in a Spring application would fail. The `@Autowired` field `writer` hasn't been injected yet, as the service is still being constructed by the JVM. Spring can only inject the field after the object has been constructed. If you need the dependency in the constructor use constructor based DI instead of fields, or just always use constructor injection as that should be the preferred way of doing DI. 
+
+```java
+package biz.deinum.blog.autowiring.statik;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.Writer;
+
+@Service
+public class HelloWorldService {
+
+    @Autowired
+    private Writer writer;
+
+    public HelloWorldService() {
+        writer.write("Constructed: " + getClass().getSimpleName());
+    }
+
+    public void sayHello(String name) throws IOException {
+        writer.write("Hello " + name);
+    }
+}
+```
+
+The following configuration will load the class and setup the needed `Writer` dependency. 
+
+```java
+package biz.deinum.blog.autowiring.statik;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import java.io.PrintWriter;
+import java.io.Writer;
+
+@Configuration
+@ComponentScan
+public class HelloWorldConfig {
+
+    @Bean
+    public Writer consoleWriter() {
+        return new PrintWriter(System.out);
+    }
+}
+```
+
+The following class with a `main` method will load the `HelloWorldConfig`, obtain the `HelloWorldService` from the `ApplicationContext` and invoke the `sayHello` method. The result will be a `NullPointerException` as the field isn't autowired yet. 
+
+```java
+package biz.deinum.blog.autowiring.statik;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class HelloWorldStatic {
+
+    public static void main(String[] args) throws Exception {
+
+        var ctx = new AnnotationConfigApplicationContext(HelloWorldConfig.class);
+        var service = ctx.getBean(HelloWorldService.class);
+        service.sayHello("World"); // Throws NullPointerException due to too early access to the field
+    }
+}
+```
+
 # Summary
 
 As a rule of thumb an autowired field in Spring cannot be `null`. If it looks like it is `null` the error is generally on the user side of things and can be tracked down to one of the following issues:
@@ -479,5 +551,6 @@ As a rule of thumb an autowired field in Spring cannot be `null`. If it looks li
 3. [Instance of bean not visible to Spring](#instance)
 4. [Using AOP and invoking a `final`, `private` or default access method](#aop)
 5. [Using XML and haven't enabled annotation processing](#xml)
+6. [Using `@Autowired` fields in the constructor](#constructor)
 
 The code can be found on [GitHub](https://github.com/mdeinum/blog-autowiring-null.git).
