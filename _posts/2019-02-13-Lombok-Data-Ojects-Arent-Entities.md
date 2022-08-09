@@ -2,7 +2,7 @@
 layout: post
 title: "Data Objects aren't entities"
 date: 2019-02-13
-last-updated: 2021-01-13
+last-updated: 2022-08-08
 categories:
 - Java
 tags:
@@ -12,7 +12,7 @@ tags:
 published: true
 ---
 
-When using a framework like [Lombok](https://projectlombok.org/) it is very tempting and eays to use its [`@Data`](https://projectlombok.org/features/Data) annotation.
+When using a framework like [Lombok](https://projectlombok.org/) it is very tempting and easy to use its [`@Data`](https://projectlombok.org/features/Data) annotation.
 
 > All together now: A shortcut for `@ToString`, `@EqualsAndHashCode`, `@Getter` on all fields, `@Setter` on all non-final fields, and `@RequiredArgsConstructor`! (Source: Lombok Documentation)
 
@@ -76,13 +76,11 @@ public abstract class BaseEntity {
     public boolean equals(Object o) {
         if (o == null) return false;
         if (this == o) return true;
-
-        if (!Objects.equals(getClass(), o.getClass())) {
-            return false;
+     
+        if (o instanceof BaseEntity that) {
+          return this.id != null && Objects.equals(this.id, that.id);
         }
-
-        BaseEntity that = (BaseEntity) o;
-        return this.id != null && Objects.equals(this.id, that.id);
+        return false;
     }
 
     @Override
